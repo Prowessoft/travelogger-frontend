@@ -10,13 +10,5 @@ phases:
       - npm run build
   post_build:
     commands:
-      - echo build complete.
-      
-  artifacts:
-    files:
-      - '**/*'
-    base-directory: build
-    
-  cache:
-    paths:
-      - node_modules/**/*
+      - echo build complete.    
+  
