@@ -1,0 +1,144 @@
+[
+    {
+        "date": "2025-02-12",
+        "activities": [
+            {
+                "id": "5d2d5ed5-edb1-4486-9d1f-a371757e17f3",
+                "type": "hotel",
+                "title": "Motel 6 Roanoke, TX - Northlake - Speedway",
+                "description": "13601 Raceway Dr, Roanoke, TX 76262, USA",
+                "location": {
+                    "name": "13601 Raceway Dr, Roanoke, TX 76262, USA",
+                    "coordinates": [
+                        33.0234716,
+                        -97.2731769
+                    ],
+                    "placeId": null
+                },
+                "startTime": null,
+                "endTime": null,
+                "duration": null,
+                "price": 0,
+                "priceLevel": null,
+                "rating": null,
+                "userRatingsTotal": null,
+                "photos": [
+                    {
+                        "url": "https://maps.googleapis.com/maps/api/place/js/PhotoService.GetPhoto?1sAVzFdblw02xrbAOdlBpTk15s9ODz5LTYJIzA7FTLfIrJwtBajDvaf08Y8C_VtAH1sih2Qr4FBQDw-ySL9NafwdS7poobkkaCQwZiEhi97gS1jBUrvbbjG1S5q6qRaLOXylBebZP_qglwkXgZlYqlD65KzbR-0FJ29i9NIKRXWUdtIcF3ILMh&3u400&4u300&5m1&2e1&callback=none&r_url=http%3A%2F%2F127.0.0.1%3A5173%2Fitinerary&key=AIzaSyBghIQI9TZFktnnyfzP8FNq7xrbR_1gfco&token=121122",
+                        "caption": null
+                    }
+                ],
+                "contact": {
+                    "phone": "",
+                    "website": "https://www.motel6.com/en/home/motels.tx.roanoke.9297.html?lid=Local_Milestone_2014&travelAgentNumber=TA001305&corporatePlusNumber=CP792N5W&utm_source=google%20my%20business&utm_medium=listing&utm_campaign=visit%20website",
+                    "googleMapsUrl": "https://maps.google.com/?cid=5708465508436392097"
+                },
+                "operatingHours": {
+                    "isOpen": true,
+                    "periods": [
+                        {
+                            "day": "Wednesday",
+                            "hours": "00:00-23:59"
+                        }
+                    ]
+                },
+                "bookingInfo": null,
+                "cuisine": null
+            },
+            {
+                "id": "32594c23-026a-4fcd-9a2a-45d13ec1588e",
+                "type": "activity",
+                "title": "Karya Siddhi Hanuman Temple",
+                "description": "12030 Independence Pkwy building b, Frisco, TX 75035, USA",
+                "location": {
+                    "name": "12030 Independence Pkwy building b, Frisco, TX 75035, USA",
+                    "coordinates": [
+                        33.1785568,
+                        -96.7485787
+                    ],
+                    "placeId": null
+                },
+                "startTime": null,
+                "endTime": null,
+                "duration": null,
+                "price": 0,
+                "priceLevel": null,
+                "rating": null,
+                "userRatingsTotal": null,
+                "photos": [
+                    {
+                        "url": "https://maps.googleapis.com/maps/api/place/js/PhotoService.GetPhoto?1sAVzFdbkRygw7P7ZJ74ntnvlXM0qgHOvtFsFX7N7Vld0RAehNfByjLyShNJ5Y9Z0rEYKkl9zugWSZk_F0tz05RwSQG1lU5jbVQc7axLb0bnlTVoQvdJR9rxq4nsuWQjjdS2AFD3JwU3Q_vrbf9BVyy6ep9OKcueF2sx5bDSbcFmkA4s34WxbP&3u400&4u300&5m1&2e1&callback=none&r_url=http%3A%2F%2F127.0.0.1%3A5173%2Fitinerary&key=AIzaSyBghIQI9TZFktnnyfzP8FNq7xrbR_1gfco&token=86703",
+                        "caption": null
+                    }
+                ],
+                "contact": {
+                    "phone": "",
+                    "website": "http://dallashanuman.org/",
+                    "googleMapsUrl": ""
+                },
+                "operatingHours": {
+                    "isOpen": true,
+                    "periods": [
+                        {
+                            "day": "Wednesday",
+                            "hours": "00:00-23:59"
+                        }
+                    ]
+                },
+                "bookingInfo": null,
+                "cuisine": null
+            },
+            {
+                "id": "c232e5e1-f628-4d7f-92e3-08780253d20f",
+                "type": "restaurant",
+                "title": "Chowrastha - Groceries,Halal Meat & Eatery",
+                "description": "7901 Cleveland Gibbs Rd, Argyle, TX 76226, USA",
+                "location": {
+                    "name": "7901 Cleveland Gibbs Rd, Argyle, TX 76226, USA",
+                    "coordinates": [
+                        33.1017868,
+                        -97.23482109999999
+                    ],
+                    "placeId": null
+                },
+                "startTime": null,
+                "endTime": null,
+                "duration": null,
+                "price": 0,
+                "priceLevel": null,
+                "rating": null,
+                "userRatingsTotal": null,
+                "photos": [
+                    {
+                        "url": "https://maps.googleapis.com/maps/api/place/js/PhotoService.GetPhoto?1sAVzFdbmiDZqjtazF8yuqk_KSdDzSuICKz7ESBI40oif5p5-BOmvHFWmDHiY64ZIS8Il1umJuMpOHNhCzJMwvU9mYW11UOn1nhfBLdpOftM2l6rmGw-P0gMOsnsVhoZuiAHK24K5lLssH84lQ17B3teU2KvvpoEZ0dbPY4eHnugZxC5_tX9PM&3u400&4u300&5m1&2e1&callback=none&r_url=http%3A%2F%2F127.0.0.1%3A5173%2Fitinerary&key=AIzaSyBghIQI9TZFktnnyfzP8FNq7xrbR_1gfco&token=43119",
+                        "caption": null
+                    }
+                ],
+                "contact": {
+                    "phone": "",
+                    "website": "http://www.chowrastha.us/",
+                    "googleMapsUrl": ""
+                },
+                "operatingHours": {
+                    "isOpen": true,
+                    "periods": [
+                        {
+                            "day": "Wednesday",
+                            "hours": "00:00-23:59"
+                        }
+                    ]
+                },
+                "bookingInfo": null,
+                "cuisine": null
+            }
+        ]
+    },
+    {
+        "date": "2025-02-13",
+        "activities": []
+    },
+    {
+        "date": "2025-02-14",
+        "activities": []
+    }
+]

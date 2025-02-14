@@ -1,0 +1,81 @@
+{
+    "id": "zu9u0mzbm",
+    "title": "Motel 6 Roanoke, TX - Northlake - Speedway",
+    "description": "13601 Raceway Dr, Roanoke, TX 76262, USA",
+    "location": {
+        "name": "13601 Raceway Dr, Roanoke, TX 76262, USA",
+        "coordinates": [
+            33.0234716,
+            -97.2731769
+        ]
+    },
+    "rating": 3.3,
+    "user_ratings_total": 852,
+    "priceLevel": null,
+    "website": "https://www.motel6.com/en/home/motels.tx.roanoke.9297.html?lid=Local_Milestone_2014&travelAgentNumber=TA001305&corporatePlusNumber=CP792N5W&utm_source=google%20my%20business&utm_medium=listing&utm_campaign=visit%20website",
+    "formatted_phone_number": "(817) 541-3625",
+    "url": "https://maps.google.com/?cid=5708465508436392097",
+    "formattedHours": [
+        {
+            "day": "Monday",
+            "hours": "Open 24 hours"
+        },
+        {
+            "day": "Tuesday",
+            "hours": "Open 24 hours"
+        },
+        {
+            "day": "Wednesday",
+            "hours": "Open 24 hours"
+        },
+        {
+            "day": "Thursday",
+            "hours": "Open 24 hours"
+        },
+        {
+            "day": "Friday",
+            "hours": "Open 24 hours"
+        },
+        {
+            "day": "Saturday",
+            "hours": "Open 24 hours"
+        },
+        {
+            "day": "Sunday",
+            "hours": "Open 24 hours"
+        }
+    ],
+    "isOpen": false,
+    "photos": [
+        {
+            "url": "https://maps.googleapis.com/maps/api/place/js/PhotoService.GetPhoto?1sAVzFdbn-VeOl9jr3QhmuorOGwGRS2Cr159E0ELs5lR7zUIwGhlZwloyj43g94eVcrqSBBqbIuUqH7mRXVVGhTb1c6t5Pqmaq-h7xXqVm_FubXsvDrCoT29M59gIi57Pm4tijLOOqshNY9qAN0lAVfaQRDiYDC2AEyCzm2VaUaQ9lyVWTPUZB&3u400&4u300&5m1&2e1&callback=none&r_url=http%3A%2F%2F127.0.0.1%3A5173%2Fitinerary&key=AIzaSyBghIQI9TZFktnnyfzP8FNq7xrbR_1gfco&token=29996"
+        },
+        {
+            "url": "https://maps.googleapis.com/maps/api/place/js/PhotoService.GetPhoto?1sAVzFdblhkdtrjwxCUhYENmJ5EEAwwjV8L6mJ4lEPzG0pEFvMJ4zZHph4xKAp5aRjh7QtySKynsL1-vZtxRw0s56ES61WNREGAhfAKM3tYOVnvmYeBHO0tLSnAQuap9BJ3PuJS1HTI0kNYOw-Vlt8rt0K0RbKM8ZO2aNMFLa1o0-pv6dZI5il&3u400&4u300&5m1&2e1&callback=none&r_url=http%3A%2F%2F127.0.0.1%3A5173%2Fitinerary&key=AIzaSyBghIQI9TZFktnnyfzP8FNq7xrbR_1gfco&token=46741"
+        },
+        {
+            "url": "https://maps.googleapis.com/maps/api/place/js/PhotoService.GetPhoto?1sAVzFdbmGjiAg_LiiJRMX3QSV_zyHaqsYQ561E2pYm6q9zvFlhGQN2rtRdhD_3lexExXTSieZrd77AgKgJEZkN_-oifXkk0_PMZfEo4XC3d27ByDT7nD0Cii_SpT7VNgfDq2rVc6zPjQQfv19-V-uOhrVoRrU7bjOFPpwCHz52RGBC__sByp0&3u400&4u300&5m1&2e1&callback=none&r_url=http%3A%2F%2F127.0.0.1%3A5173%2Fitinerary&key=AIzaSyBghIQI9TZFktnnyfzP8FNq7xrbR_1gfco&token=51103"
+        },
+        {
+            "url": "https://maps.googleapis.com/maps/api/place/js/PhotoService.GetPhoto?1sAVzFdbkzWXCiTfjwdWTKWaa03LKRQy39sT1uloLsQ5WFJhTlrkRejfHo72FDfjTCdD5mNQtYLS8XZiJga38q3ZTcYTfvuBgxorYzNCC_5FHJWi_09ft9gfWioK1diAyBpgv-AtXy4jixhz_muN41kryTw--cX4Q2F2jS9aLAnbXizzOe5RfI&3u400&4u300&5m1&2e1&callback=none&r_url=http%3A%2F%2F127.0.0.1%3A5173%2Fitinerary&key=AIzaSyBghIQI9TZFktnnyfzP8FNq7xrbR_1gfco&token=17133"
+        },
+        {
+            "url": "https://maps.googleapis.com/maps/api/place/js/PhotoService.GetPhoto?1sAVzFdbl8xLR4XTXvQDWYpjExD6v77Fy6KcQlgfDpz0XFTkie02KdW3eIiGhzvVnnyS_vDxyBgPsqQsjceEvWioDqn8CKyQ0dhqhNth-bgnwXXQ2OPvwa2q-k12NNR8EcGsGXQ46_SbzsaaFCmn4HOpddE27ozd4_3W5At9LvbRvFA3Bv-gOg&3u400&4u300&5m1&2e1&callback=none&r_url=http%3A%2F%2F127.0.0.1%3A5173%2Fitinerary&key=AIzaSyBghIQI9TZFktnnyfzP8FNq7xrbR_1gfco&token=45979"
+        },
+        {
+            "url": "https://maps.googleapis.com/maps/api/place/js/PhotoService.GetPhoto?1sAVzFdbm0mCB4Lv8upiSijtu1ibMl2su2ksmIgkQmW7_tK_EBgzpF2AMciwT3K8rtCBKbrjBgqZGaQ_MBAL450p-hRNDhB-ztBw4brzlGHrmetm8ENpX1nC8s9p58oOo7hqkJh02BlTMTmJmm0CQMPOFyFHy8a-bl6ZMueABqP3JXlMMnoYPD&3u400&4u300&5m1&2e1&callback=none&r_url=http%3A%2F%2F127.0.0.1%3A5173%2Fitinerary&key=AIzaSyBghIQI9TZFktnnyfzP8FNq7xrbR_1gfco&token=104146"
+        },
+        {
+            "url": "https://maps.googleapis.com/maps/api/place/js/PhotoService.GetPhoto?1sAVzFdblTVvTukTZ_7TZoL_0D1HgZ4jBGtkPGYeYR-G0x4N-cwLLLMtoOi64JYPrER0dvBWHW8iaKnXwLCS7VIOOvs5fsWWu1wmraWBeCZxRLTGt4cw_lfGFxEd-WuqQr8MqPU8eIVfuXJKKYu9Q7d5h64aUl_CGbPY625cZcovVDQ7kNhAag&3u400&4u300&5m1&2e1&callback=none&r_url=http%3A%2F%2F127.0.0.1%3A5173%2Fitinerary&key=AIzaSyBghIQI9TZFktnnyfzP8FNq7xrbR_1gfco&token=96361"
+        },
+        {
+            "url": "https://maps.googleapis.com/maps/api/place/js/PhotoService.GetPhoto?1sAVzFdbmKU5Ig4nhQypBYyngQt4iMumgUa8yHM16rcvgTD-RRAnoSuZdwUXNcpGJF_UCMXAnujCXcgKE2l4P4Ftn390H81ffqFMl53nAzB01YNo3J_kXZp_x2XWxldGvcKRc9dd0MAbnLzAWpcB8NpQi83ijIPCM54cK6BBRKdhliM0JYckQ3&3u400&4u300&5m1&2e1&callback=none&r_url=http%3A%2F%2F127.0.0.1%3A5173%2Fitinerary&key=AIzaSyBghIQI9TZFktnnyfzP8FNq7xrbR_1gfco&token=57668"
+        },
+        {
+            "url": "https://maps.googleapis.com/maps/api/place/js/PhotoService.GetPhoto?1sAVzFdbnqjX2TH_x82Isjyehx1OZqTxmiW6t6nO6BwAKtiV0pZ82D7NfrGm1fAIcPk4-WWlcvleuf-d4Va7QVZZTtmKmqOM75CeWaGkyJQZ17B380Myvjnvf9Ss1F6YcP-kTQBtBD61S8BNbvLV0ife9orECVqT9zwPw5huOR-kspjcwnlumG&3u400&4u300&5m1&2e1&callback=none&r_url=http%3A%2F%2F127.0.0.1%3A5173%2Fitinerary&key=AIzaSyBghIQI9TZFktnnyfzP8FNq7xrbR_1gfco&token=15045"
+        },
+        {
+            "url": "https://maps.googleapis.com/maps/api/place/js/PhotoService.GetPhoto?1sAVzFdblp8JO_XbVRtsKHQQb1itYDEcEXMjaO7gA3IRbavOTnhq65CMshQE9OyaAY0tm6snWO1ZpvBhYpD7oMuMbjpWCcSqa90T6kuc8mzZqP5vPH_0oU-l-ffVx63QtDzaRi1yaIIfVZpjw_ZcTq7gJBPkphKQ8z0TQVPg1TmHd2kELFcVyp&3u400&4u300&5m1&2e1&callback=none&r_url=http%3A%2F%2F127.0.0.1%3A5173%2Fitinerary&key=AIzaSyBghIQI9TZFktnnyfzP8FNq7xrbR_1gfco&token=95054"
+        }
+    ]
+}
