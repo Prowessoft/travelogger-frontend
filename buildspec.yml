@@ -10,9 +10,5 @@ phases:
       - npm run build
   post_build:
     commands:
+      - aws s3 cp --recursive ./build s3://codepipeline-us-east-1-521951398019/
       - echo build complete.
-
-artifacts:
-  files:
-    - 'build/**/*'
-  discard-paths: yes
