@@ -1,7 +1,7 @@
 version: 0.2
 phases:
   pre_build:
-    commands: 
+    commands:
       - echo Installing dependencies
       - npm install
   build:
@@ -10,7 +10,9 @@ phases:
       - npm run build
   post_build:
     commands:
-      - echo build complete.    
-  artifacts:
-   files:
+      - echo build complete.
+
+artifacts:
+  files:
     - 'build/**/*'
+  discard-paths: yes
