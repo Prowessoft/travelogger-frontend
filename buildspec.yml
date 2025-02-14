@@ -13,5 +13,4 @@ phases:
       - echo build complete.    
   artifacts:
    files:
-    - 'build/**/*'  # Pointing to the build directory created after running `npm run build`
-  discard-paths: yes
+    - 'build/**/*'
