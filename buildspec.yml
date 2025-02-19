@@ -8,15 +8,11 @@ phases:
     commands:
       - echo Building the React app
       - npm run build
+      - ls -ltr
   post_build:
     commands:
-      - echo build complete.
-      
+      - echo build complete. 
   artifacts:
     files:
       - '**/*'
     base-directory: build
-    
-  cache:
-    paths:
-      - node_modules/**/*
