@@ -5,7 +5,7 @@ const loadGoogleMapsScript = (apiKey) => {
     console.error("Google Maps API key is missing");
     return;
   }
-
+  console.log('maps document:::')
   const existingScript = document.querySelector('script[src^="https://maps.googleapis.com/maps/api/js"]');
 
   if (!existingScript) {

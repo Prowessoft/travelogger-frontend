@@ -92,6 +92,7 @@ export default function ItineraryPage() {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const markersRef = useRef([]);
+  const [isLargeScreen, setIsLargeScreen] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -117,11 +118,47 @@ export default function ItineraryPage() {
   };
 
   useEffect(() => {
+    // Function to check screen size dynamically
+    const checkScreenSize = () => {
+      setIsLargeScreen(window.innerWidth >= 768);
+    };
+
+    // Run check once on mount
+    checkScreenSize();
+
+    // Listen for screen resize
+    window.addEventListener("resize", checkScreenSize);
+
+    return () => window.removeEventListener("resize", checkScreenSize);
+  }, []);
+
+  useEffect(() => {
+    if (!trip || itineraryId) {
+      // navigate('/plan-trip');
+      console.log("inside:::");
+      return;
+    }
+
+    // Initialize days based on trip dates
+    const start = new Date(trip.startDate);
+    const end = new Date(trip.endDate);
+    const dayCount = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
+
+    const initialDays = Array.from({ length: dayCount }, (_, index) => {
+      const date = new Date(start);
+      date.setDate(date.getDate() + index);
+      return {
+        date: date.toISOString(),
+        activities: [],
+      };
+    });
+
+    initializeDays(initialDays);
+  }, [trip, navigate, initializeDays, itineraryId]);
+
+  useEffect(() => {
     const loadSavedItinerary = async () => {
       if (!itineraryId) {
-        // if (!trip) {
-        //   navigate('/plan-trip');
-        // }
         return;
       }
 
@@ -175,35 +212,9 @@ export default function ItineraryPage() {
   }, [itineraryId, initializeDays, navigate]);
 
   useEffect(() => {
-    if (!trip || itineraryId) {
-      // navigate('/plan-trip');
-      console.log("inside:::");
+    if (!trip || !isLargeScreen) {
       return;
     }
-
-    // Initialize days based on trip dates
-    const start = new Date(trip.startDate);
-    const end = new Date(trip.endDate);
-    const dayCount = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
-
-    const initialDays = Array.from({ length: dayCount }, (_, index) => {
-      const date = new Date(start);
-      date.setDate(date.getDate() + index);
-      return {
-        date: date.toISOString(),
-        activities: [],
-      };
-    });
-
-    initializeDays(initialDays);
-    // setDaysData(days ? days : initialDays);
-
-    // if (days !== daysData) {
-    //   setDaysData(days);
-    // }
-  }, [trip, navigate, initializeDays]);
-
-  useEffect(() => {
     const setupMap = async () => {
       try {
         if (!trip) {
@@ -299,9 +310,8 @@ export default function ItineraryPage() {
         setLoading(false);
       }
     };
-
     setupMap();
-  }, [trip, navigate]);
+  }, [trip, navigate, isLargeScreen]);
 
   const handleSearch = () => {
     if (!searchQuery.trim() || !mapInstanceRef.current) return;
