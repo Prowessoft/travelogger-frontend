@@ -12,9 +12,15 @@ import { create } from 'zustand';
  * }>}
  */
 const createTripStore = (set) => ({
-  currentTrip: null,
-  setTrip: (trip) => set({ currentTrip: trip }),
-  clearTrip: () => set({ currentTrip: null })
+  currentTrip: JSON.parse(sessionStorage.getItem("currentTrip")) || null,
+  setTrip: (trip) => {
+    sessionStorage.setItem("currentTrip", JSON.stringify(trip));
+    set({ currentTrip: trip })
+  },
+  clearTrip: () => {
+    sessionStorage.removeItem("currentTrip");
+    set({ currentTrip: null })
+  }
 });
 
 export const useTripStore = create(createTripStore);
