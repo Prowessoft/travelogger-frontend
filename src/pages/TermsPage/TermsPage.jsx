@@ -10,19 +10,19 @@ export default function TermsPage() {
           <section className="mb-12">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">1. Agreement to Terms</h2>
             <p className="text-gray-600 mb-4">
-              By accessing or using Wanderlust's services, you agree to be bound by these Terms of Service and all applicable laws and regulations. If you do not agree with any of these terms, you are prohibited from using or accessing this site.
+              By accessing or using Travelogger's services, you agree to be bound by these Terms of Service and all applicable laws and regulations. If you do not agree with any of these terms, you are prohibited from using or accessing this site.
             </p>
           </section>
 
           <section className="mb-12">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">2. Use License</h2>
             <p className="text-gray-600 mb-4">
-              Permission is granted to temporarily access and use Wanderlust's services for personal, non-commercial use, subject to the following restrictions:
+              Permission is granted to temporarily access and use Travelogger's services for personal, non-commercial use, subject to the following restrictions:
             </p>
             <ul className="list-disc pl-6 text-gray-600 mb-6">
               <li>You must not modify or copy the materials without explicit permission</li>
               <li>You must not use the materials for any commercial purpose</li>
-              <li>You must not attempt to reverse engineer any software contained on Wanderlust's platform</li>
+              <li>You must not attempt to reverse engineer any software contained on Travelogger's platform</li>
               <li>You must not remove any copyright or proprietary notations from the materials</li>
             </ul>
           </section>
@@ -41,7 +41,7 @@ export default function TermsPage() {
           <section className="mb-12">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">4. User Content</h2>
             <p className="text-gray-600 mb-4">
-              By posting content on Wanderlust, including travel experiences, photos, and reviews, you grant us a non-exclusive, worldwide, royalty-free license to use, modify, publicly display, and distribute such content on our platform.
+              By posting content on Travelogger, including travel experiences, photos, and reviews, you grant us a non-exclusive, worldwide, royalty-free license to use, modify, publicly display, and distribute such content on our platform.
             </p>
             <p className="text-gray-600 mb-4">You agree not to post content that:</p>
             <ul className="list-disc pl-6 text-gray-600 mb-6">
@@ -79,14 +79,14 @@ export default function TermsPage() {
           <section className="mb-12">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">7. Intellectual Property</h2>
             <p className="text-gray-600 mb-4">
-              The Wanderlust platform, including its original content, features, and functionality, is owned by Wanderlust and protected by international copyright, trademark, and other intellectual property laws.
+              The Travelogger platform, including its original content, features, and functionality, is owned by Travelogger and protected by international copyright, trademark, and other intellectual property laws.
             </p>
           </section>
 
           <section className="mb-12">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">8. Limitation of Liability</h2>
             <p className="text-gray-600 mb-4">
-              Wanderlust shall not be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use or inability to use the service. This includes but is not limited to:
+              Travelogger shall not be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use or inability to use the service. This includes but is not limited to:
             </p>
             <ul className="list-disc pl-6 text-gray-600 mb-6">
               <li>Loss of profits, data, or other intangibles</li>
@@ -106,7 +106,7 @@ export default function TermsPage() {
           <section className="mb-12">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">10. Changes to Terms</h2>
             <p className="text-gray-600 mb-4">
-              We reserve the right to modify these terms at any time. We will notify users of any material changes via email or through the platform. Your continued use of Wanderlust after such modifications constitutes your acceptance of the updated terms.
+              We reserve the right to modify these terms at any time. We will notify users of any material changes via email or through the platform. Your continued use of Travelogger after such modifications constitutes your acceptance of the updated terms.
             </p>
           </section>
 
@@ -123,7 +123,7 @@ export default function TermsPage() {
               For any questions about these Terms of Service, please contact us at:
             </p>
             <div className="bg-gray-50 p-6 rounded-lg">
-              <p className="text-gray-600">Email: legal@wanderlust.com</p>
+              <p className="text-gray-600">Email: legal@Travelogger.com</p>
               <p className="text-gray-600">Address: 123 Travel Street, Adventure City, AC 12345</p>
             </div>
           </section>

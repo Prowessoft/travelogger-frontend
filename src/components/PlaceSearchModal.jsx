@@ -166,6 +166,10 @@ export function PlaceSearchModal({ isOpen, onClose, onPlaceSelect, mapCenter }) 
                     fontSize: '1rem',
                     padding: '8px'
                   }),
+                  placeholder: (provided) => ({
+                    ...provided,
+                    marginLeft: '10px'
+                  }),
                   option: (provided, state) => ({
                     ...provided,
                     fontSize: '1rem',

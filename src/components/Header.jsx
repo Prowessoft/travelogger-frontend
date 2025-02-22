@@ -26,12 +26,12 @@ export function Header() {
             <Link to="/" className="flex items-center gap-2">
               <Compass className="w-8 h-8 text-primary-600" />
               <span className="text-xl font-bold text-gray-900">
-                Wanderlust
+                Travelogger
               </span>
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-6">
+            {/* <nav className="hidden md:flex items-center gap-6">
               <Link
                 to="/experiences"
                 className="flex items-center gap-1 text-gray-600 hover:text-gray-900"
@@ -39,10 +39,7 @@ export function Header() {
                 <Camera className="w-4 h-4" />
                 Experiences
               </Link>
-              {/* {isAuthenticated && (
-                
-              )} */}
-            </nav>
+            </nav> */}
 
             {/* Desktop Auth Buttons */}
             <div className="hidden md:flex items-center gap-4">

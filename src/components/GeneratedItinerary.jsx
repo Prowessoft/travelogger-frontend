@@ -14,9 +14,13 @@ import {
   Navigation,
   MessageSquare,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Save,
+  Share2
 } from 'lucide-react';
 import { getMapsLoader } from '../utils/mapsLoader';
+import emailService from "../services/emailService";
+
 
 const formatDate = (dayIndex, tripData) => {
   if (!tripData?.startDate) {
@@ -27,8 +31,8 @@ const formatDate = (dayIndex, tripData) => {
   date.setDate(date.getDate() + dayIndex);
 
   return `Day ${dayIndex + 1}: ${date.toLocaleDateString('en-US', {
-    weekday: 'short',
-    month: 'numeric',
+    timeZone: 'UTC',
+    month: 'long',
     day: 'numeric',
     year: 'numeric'
   })}`;
@@ -262,6 +266,13 @@ function GeneratedItinerary() {
 
   const destination = tripPlan.tripDetails?.location || 'Your Destination';
   const heroImage = getDestinationImage(destination);
+  const handleShare = async () => {
+    // TODO: Implement share functionality
+    console.log("Sharing email itinerary...");
+    //modify the data to send for email
+    // await emailService.sendEmail(days, trip, user);
+  };
+
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -270,7 +281,7 @@ function GeneratedItinerary() {
         <div className="w-1/2 h-full overflow-y-auto">
           {/* Hero Header */}
           <div className="relative h-[300px]">
-            <img 
+            <img
               src={heroImage}
               alt={destination}
               className="w-full h-full object-cover"
@@ -297,10 +308,44 @@ function GeneratedItinerary() {
 
           {/* Content */}
           <div className="p-6 space-y-6">
-            <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-              <Calendar className="w-6 h-6 text-primary-600" />
-              Your Daily Itinerary
-            </h2>
+
+            <div className="flex gap-3">
+              <h2 className="flex flex-1 text-2xl font-bold text-gray-900 gap-2">
+                <Calendar className="w-6 h-6 text-primary-600" />
+                Your Daily Itinerary
+              </h2>
+              <div className="flex gap-3 items-end">
+                {/* <button
+                  // onClick={handleSave}
+                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  <Save className="w-4 h-4" />
+                  Save
+                </button> */}
+                <button
+                  onClick={handleShare}
+                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors"
+                >
+                  <Share2 className="w-4 h-4" />
+                  Share
+                </button>
+              </div>
+
+              {/* Budget Summary */}
+              {/* <div className="bg-gray-50 rounded-lg p-3 flex items-center gap-3">
+                <div className="p-2 bg-primary-100 rounded-lg">
+                  <Calculator className="w-5 h-5 text-primary-600" />
+                </div>
+                <div>
+                  <div className="text-sm font-medium text-gray-900">
+                    Total Budget
+                  </div>
+                  <div className="text-lg font-bold text-primary-600">
+                    ${calculateTotalBudget().toFixed(2)}
+                  </div>
+                </div>
+              </div> */}
+            </div>
 
             {/* Hotels Section */}
             {tripPlan.hotels && tripPlan.hotels.length > 0 && (
@@ -324,19 +369,25 @@ function GeneratedItinerary() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex justify-between items-start mb-2">
-                            <h3 className="font-medium text-gray-900">{hotel.name}</h3>
+                            <h3 className="font-medium text-gray-900">
+                              {hotel.name}
+                            </h3>
                             <div className="flex items-center gap-1 text-primary-600">
                               <Star className="w-4 h-4 fill-current" />
                               <span>{hotel.rating}</span>
                             </div>
                           </div>
-                          <p className="text-sm text-gray-600 mb-2">{hotel.description}</p>
+                          <p className="text-sm text-gray-600 mb-2">
+                            {hotel.description}
+                          </p>
                           <div className="flex items-center justify-between text-sm">
                             <div className="flex items-center gap-1 text-gray-500">
                               <MapPin className="w-4 h-4" />
                               <span className="truncate">{hotel.address}</span>
                             </div>
-                            <span className="font-medium text-primary-600">{hotel.pricePerNight}</span>
+                            <span className="font-medium text-primary-600">
+                              {hotel.pricePerNight}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -349,10 +400,15 @@ function GeneratedItinerary() {
             {/* Daily Itinerary */}
             <div className="space-y-4">
               {tripPlan.dailyItinerary?.map((day, dayIndex) => (
-                <div key={dayIndex} className="bg-white rounded-xl shadow-sm overflow-hidden">
+                <div
+                  key={dayIndex}
+                  className="bg-white rounded-xl shadow-sm overflow-hidden"
+                >
                   <button
                     className="w-full p-4 flex items-center justify-between bg-white hover:bg-gray-50 transition-colors"
-                    onClick={() => setExpandedDay(expandedDay === dayIndex ? -1 : dayIndex)}
+                    onClick={() =>
+                      setExpandedDay(expandedDay === dayIndex ? -1 : dayIndex)
+                    }
                   >
                     <h3 className="font-medium text-gray-900">
                       {formatDate(dayIndex, location.state?.tripData)}
@@ -375,7 +431,10 @@ function GeneratedItinerary() {
                           </h4>
                           <div className="space-y-4">
                             {day.activities.map((activity, actIndex) => (
-                              <div key={actIndex} className="bg-gray-50 rounded-lg p-4">
+                              <div
+                                key={actIndex}
+                                className="bg-gray-50 rounded-lg p-4"
+                              >
                                 <div className="flex gap-4">
                                   <div className="w-32 h-24 rounded-lg overflow-hidden flex-shrink-0">
                                     <LocationImage
@@ -385,8 +444,12 @@ function GeneratedItinerary() {
                                     />
                                   </div>
                                   <div className="flex-1 min-w-0">
-                                    <h5 className="font-medium text-gray-900">{activity.name}</h5>
-                                    <p className="text-sm text-gray-600 mt-1">{activity.description}</p>
+                                    <h5 className="font-medium text-gray-900">
+                                      {activity.name}
+                                    </h5>
+                                    <p className="text-sm text-gray-600 mt-1">
+                                      {activity.description}
+                                    </p>
                                     <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
                                       {activity.duration && (
                                         <div className="flex items-center gap-1">
@@ -418,7 +481,10 @@ function GeneratedItinerary() {
                           </h4>
                           <div className="space-y-4">
                             {day.restaurants.map((restaurant, restIndex) => (
-                              <div key={restIndex} className="bg-gray-50 rounded-lg p-4">
+                              <div
+                                key={restIndex}
+                                className="bg-gray-50 rounded-lg p-4"
+                              >
                                 <div className="flex gap-4">
                                   <div className="w-32 h-24 rounded-lg overflow-hidden flex-shrink-0">
                                     <LocationImage
@@ -428,12 +494,18 @@ function GeneratedItinerary() {
                                     />
                                   </div>
                                   <div className="flex-1 min-w-0">
-                                    <h5 className="font-medium text-gray-900">{restaurant.name}</h5>
-                                    <p className="text-sm text-gray-600 mt-1">{restaurant.cuisine} Cuisine</p>
+                                    <h5 className="font-medium text-gray-900">
+                                      {restaurant.name}
+                                    </h5>
+                                    <p className="text-sm text-gray-600 mt-1">
+                                      {restaurant.cuisine} Cuisine
+                                    </p>
                                     <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
                                       <div className="flex items-center gap-1">
                                         <MapPin className="w-4 h-4" />
-                                        <span className="truncate">{restaurant.address}</span>
+                                        <span className="truncate">
+                                          {restaurant.address}
+                                        </span>
                                       </div>
                                       <div className="flex items-center gap-1">
                                         <DollarSign className="w-4 h-4" />
@@ -461,9 +533,11 @@ function GeneratedItinerary() {
           {mapError && (
             <div className="absolute inset-0 flex items-center justify-center bg-gray-50">
               <div className="text-center p-4">
-                <p className="text-red-600 font-medium mb-2">Unable to load map</p>
+                <p className="text-red-600 font-medium mb-2">
+                  Unable to load map
+                </p>
                 <p className="text-gray-600 mb-4">{mapError}</p>
-                <button 
+                <button
                   onClick={() => window.location.reload()}
                   className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
                 >

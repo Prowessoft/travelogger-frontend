@@ -47,8 +47,8 @@ export default function ContactPage() {
             <div className="text-center p-6 bg-gray-50 rounded-lg">
               <Mail className="w-8 h-8 text-primary-500 mx-auto mb-4" />
               <h3 className="text-lg font-semibold mb-2">Email Us</h3>
-              <a href="mailto:contact@wanderlust.com" className="text-gray-600 hover:text-primary-500">
-                contact@wanderlust.com
+              <a href="mailto:contact@Travelogger.com" className="text-gray-600 hover:text-primary-500">
+                contact@Travelogger.com
               </a>
             </div>
             <div className="text-center p-6 bg-gray-50 rounded-lg">

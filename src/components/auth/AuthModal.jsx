@@ -9,6 +9,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { useAuthStore } from "../../store/authStore";
+import GoogleLoginButton from "../GoogleLoginButton";
 
 const avatars = [
   "https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=Felix&backgroundColor=b6e3f4",
@@ -316,6 +317,16 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }) {
                   ? "Don't have an account? Sign up"
                   : "Already have an account? Sign in"}
               </button>
+              <div className="flex flex-col max-w-sm mx-auto">
+                <div className="relative w-full flex items-center mt-4">
+                  <div className="flex-grow border-t border-gray-300"></div>
+                  <span className="px-3 text-gray-500 text-sm">or</span>
+                  <div className="flex-grow border-t border-gray-300"></div>
+                </div>
+                <div class="mt-4">
+                  <GoogleLoginButton />
+                </div>
+              </div>
             </div>
           </form>
         </div>
