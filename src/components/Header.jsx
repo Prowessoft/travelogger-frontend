@@ -26,7 +26,7 @@ export function Header() {
             <Link to="/" className="flex items-center gap-2">
               <Compass className="w-8 h-8 text-primary-600" />
               <span className="text-xl font-bold text-gray-900">
-                Wanderlust
+                Travelogger
               </span>
             </Link>
 

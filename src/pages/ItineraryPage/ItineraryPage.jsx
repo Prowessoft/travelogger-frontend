@@ -154,6 +154,8 @@ export default function ItineraryPage() {
     });
 
     initializeDays(initialDays);
+    setLoading(false);
+
   }, [trip, navigate, initializeDays, itineraryId]);
 
   useEffect(() => {
@@ -545,7 +547,7 @@ export default function ItineraryPage() {
     <div className="min-h-screen bg-gray-50">
       <div className="flex h-screen">
         {/* Left Side - Content */}
-        <div className="w-1/2 h-full overflow-y-auto">
+        <div className="w-full md:w-1/2 h-full overflow-y-auto">
           {/* Hero Header */}
           <div className="relative h-[300px]">
             <img
@@ -657,6 +659,7 @@ export default function ItineraryPage() {
                         <h3 className="font-medium text-gray-900">
                           Day {index + 1}:{" "}
                           {new Date(day.date).toLocaleDateString("en-US", {
+                            timeZone: 'UTC',
                             weekday: "long",
                             month: "long",
                             day: "numeric",
@@ -713,7 +716,7 @@ export default function ItineraryPage() {
         </div>
 
         {/* Right Side - Map */}
-        <div className="w-1/2 relative">
+        <div className="hidden md:block md:w-1/2 relative">
           <div ref={mapRef} className="absolute inset-0" />
           {mapError && (
             <div className="absolute inset-0 flex items-center justify-center bg-gray-50">
