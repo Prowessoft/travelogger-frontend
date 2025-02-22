@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { MapPin, Calendar, ArrowRight, Sparkles, Globe } from 'lucide-react';
 import { useTripStore } from '../../store/tripStore';
+import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
 
 const popularDestinations = [
   {
@@ -102,15 +103,42 @@ export default function PlanTripPage() {
                   Destination
                 </label>
                 <div className="relative">
-                  <MapPin className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                  <input
+                                    {/* <input
                     type="text"
                     id="destination"
                     value={destination}
                     onChange={(e) => setDestination(e.target.value)}
                     placeholder="Enter destination"
                     className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 placeholder:text-gray-400"
-                  />
+                  /> */}
+                  <GooglePlacesAutocomplete
+                  apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
+                  selectProps={{
+                    value: destination,
+                    onChange: (v) => {
+                      setDestination(v);
+                      // handleInputChange('location', v);
+                    },
+                    placeholder: "Search for a destination...",
+                    styles: {
+                      control: (provided) => ({
+                        ...provided,
+                        borderRadius: '0.75rem',
+                        border: '2px solid #e2e8f0',
+                        boxShadow: 'none',
+                        '&:hover': {
+                          borderColor: '#cbd5e1'
+                        }
+                      }),
+                      option: (provided, state) => ({
+                        ...provided,
+                        backgroundColor: state.isFocused ? '#f1f5f9' : 'white',
+                        color: '#1e293b',
+                        cursor: 'pointer'
+                      })
+                    }
+                  }}
+                />
                 </div>
               </div>
 

@@ -224,7 +224,7 @@ export default function SecurityPage() {
                 </p>
                 <ul className="mt-2 space-y-2 text-gray-600">
                   <li>• Emergency Hotline: +1-800-SAFE-TRAVEL</li>
-                  <li>• Emergency Email: emergency@wanderlust.com</li>
+                  <li>• Emergency Email: emergency@Travelogger.com</li>
                   <li>• In-App Emergency Button (Fastest Response)</li>
                 </ul>
               </div>

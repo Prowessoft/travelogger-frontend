@@ -10,7 +10,7 @@ const faqCategories = [
         answer: "Creating an account is easy! Click the 'Sign Up' button in the top right corner, enter your email and password, choose an avatar, and you're ready to start planning your trips."
       },
       {
-        question: "Can I use Wanderlust without creating an account?",
+        question: "Can I use Travelogger without creating an account?",
         answer: "Yes, you can browse travel guides and experiences without an account. However, to save itineraries, share experiences, or interact with other travelers, you'll need to create a free account."
       },
       {
@@ -79,10 +79,10 @@ const faqCategories = [
     faqs: [
       {
         question: "What browsers are supported?",
-        answer: "Wanderlust works best on recent versions of Chrome, Firefox, Safari, and Edge. For optimal experience, we recommend keeping your browser updated to the latest version."
+        answer: "Travelogger works best on recent versions of Chrome, Firefox, Safari, and Edge. For optimal experience, we recommend keeping your browser updated to the latest version."
       },
       {
-        question: "Can I use Wanderlust on mobile devices?",
+        question: "Can I use Travelogger on mobile devices?",
         answer: "Yes! Our platform is fully responsive and works on smartphones and tablets. You can plan trips and access your itineraries on any device."
       },
       {

@@ -21,7 +21,7 @@ export function Footer() {
           <div className="space-y-4">
             <div className="flex items-center gap-2 mb-4">
               <Compass className="w-6 h-6 text-primary-500" />
-              <span className="text-xl font-bold text-white">Wanderlust</span>
+              <span className="text-xl font-bold text-white">Travelogger</span>
             </div>
             <p className="text-sm text-gray-400">
               Empowering travelers to explore the world with confidence through 
@@ -115,8 +115,8 @@ export function Footer() {
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <Mail className="w-5 h-5 text-primary-500" />
-                <a href="mailto:contact@wanderlust.com" className="text-gray-400 text-sm">
-                  contact@wanderlust.com
+                <a href="mailto:contact@Travelogger.com" className="text-gray-400 text-sm">
+                  contact@Travelogger.com
                 </a>
               </div>
               <div className="flex items-center gap-2">
@@ -157,7 +157,7 @@ export function Footer() {
 
         {/* Bottom Bar */}
         <div className="mt-8 sm:mt-12 pt-8 border-t border-gray-800 text-sm text-center text-gray-400">
-          <p>&copy; {new Date().getFullYear()} Wanderlust. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Travelogger. All rights reserved.</p>
         </div>
       </div>
     </footer>

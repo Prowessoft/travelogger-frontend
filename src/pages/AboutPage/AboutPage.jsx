@@ -23,7 +23,7 @@ export default function AboutPage() {
         </div>
         <div className="relative h-full flex items-center justify-center text-center">
           <div>
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">About Wanderlust</h1>
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">About Travelogger</h1>
             <p className="text-xl text-white/90 max-w-2xl mx-auto px-4">
               Empowering travelers to explore the world with confidence and purpose
             </p>
@@ -57,7 +57,7 @@ export default function AboutPage() {
               <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Story</h2>
               <div className="space-y-4 text-gray-600">
                 <p>
-                  Founded in 2009, Wanderlust began with a simple mission: to make travel planning easier and more enjoyable for everyone. What started as a small blog sharing travel tips has grown into a comprehensive platform serving travelers worldwide.
+                  Founded in 2009, Travelogger began with a simple mission: to make travel planning easier and more enjoyable for everyone. What started as a small blog sharing travel tips has grown into a comprehensive platform serving travelers worldwide.
                 </p>
                 <p>
                   Our team of passionate travelers and tech enthusiasts works tirelessly to bring you the best tools and resources for planning your perfect trip. We believe that travel has the power to transform lives and create lasting memories.
