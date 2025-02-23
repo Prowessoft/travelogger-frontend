@@ -156,7 +156,7 @@ export function SortableActivityItem({ activity, onRemove, number, nextActivity 
           {/* )} */}
 
           {/* Content */}
-          <div className="flex-1 p-3">
+          <div className="flex-1 p-3 min-w-0">
             <div className="flex items-start gap-2">
               <button
                 type="button"
@@ -291,11 +291,11 @@ export function SortableActivityItem({ activity, onRemove, number, nextActivity 
                       }
                     </div>
 
-                    <div className="flex items-center gap-4 text-xs text-gray-600">
+                    <div className="items-center gap-4 text-xs text-gray-600">
                       {activity.location && (
                         <div className="flex items-center">
                           <MapPin className="w-3 h-3 mr-1 flex-shrink-0" />
-                          <span className="truncate">{activity.location.name}</span>
+                          <span>{activity.location.name}</span>
                         </div>
                       )}
                       {
