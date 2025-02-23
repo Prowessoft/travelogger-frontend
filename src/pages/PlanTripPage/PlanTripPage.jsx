@@ -3,6 +3,8 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { MapPin, Calendar, ArrowRight, Sparkles, Globe } from 'lucide-react';
 import { useTripStore } from '../../store/tripStore';
 import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const popularDestinations = [
   {
@@ -75,17 +77,50 @@ export default function PlanTripPage() {
     setDestination(`${dest.name}, ${dest.country}`);
   };
 
+  const DateInput = ({ label, selectedDate, setSelectedDate, minDate }) => {
+    return (
+      <div className="w-full">
+        <label className="block text-sm text-gray-700 font-medium mb-1">{label}</label>
+        <div className="relative w-full">
+          {/* Calendar Icon */}
+          {/* <div className='absolute z-10'>
+          <Calendar className="  left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5 pointer-events-none" />
+          </div> */}
+          <div className="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none z-10">
+          <Calendar className="text-gray-500 w-5 h-5" />
+        </div>
+          
+          {/* <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5 pointer-events-none" /> */}
+
+
+  
+          {/* Date Picker */}
+          <DatePicker
+            selected={selectedDate}
+            onChange={(date) => setSelectedDate(date)}
+            minDate={minDate}
+            dateFormat="MM/dd/yyyy" // Changed to MM/DD/YYYY format
+            placeholderText="MM/DD/YYYY"
+            className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white outline-none text-gray-900"
+            wrapperClassName="w-full relative"
+            popperClassName="z-50"
+          />
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 pt-20">
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            {isAIMode ? 'AI-Powered Trip Planning' : 'Plan Your Next Adventure'}
+            {isAIMode ? "AI-Powered Trip Planning" : "Plan Your Next Adventure"}
           </h1>
           <p className="text-lg text-gray-600">
-            {isAIMode 
-              ? 'Let our AI create a personalized itinerary based on your preferences'
-              : 'Choose your destination and dates to start planning your perfect trip'}
+            {isAIMode
+              ? "Let our AI create a personalized itinerary based on your preferences"
+              : "Choose your destination and dates to start planning your perfect trip"}
           </p>
         </div>
 
@@ -97,13 +132,16 @@ export default function PlanTripPage() {
                   {error}
                 </div>
               )}
-              
-              <div>
-                <label htmlFor="destination" className="block text-sm font-medium text-gray-700 mb-1">
+
+              <div className="w-full max-w-2xl">
+                <label
+                  htmlFor="destination"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Destination
                 </label>
                 <div className="relative">
-                                    {/* <input
+                  {/* <input
                     type="text"
                     id="destination"
                     value={destination}
@@ -112,66 +150,77 @@ export default function PlanTripPage() {
                     className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 placeholder:text-gray-400"
                   /> */}
                   <GooglePlacesAutocomplete
-                  apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
-                  selectProps={{
-                    value: destination,
-                    onChange: (v) => {
-                      setDestination(v);
-                      // handleInputChange('location', v);
-                    },
-                    placeholder: "Search for a destination...",
-                    styles: {
-                      control: (provided) => ({
-                        ...provided,
-                        borderRadius: '0.75rem',
-                        border: '2px solid #e2e8f0',
-                        boxShadow: 'none',
-                        '&:hover': {
-                          borderColor: '#cbd5e1'
-                        }
-                      }),
-                      option: (provided, state) => ({
-                        ...provided,
-                        backgroundColor: state.isFocused ? '#f1f5f9' : 'white',
-                        color: '#1e293b',
-                        cursor: 'pointer'
-                      })
-                    }
-                  }}
-                />
+                    apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
+                    selectProps={{
+                      value: destination,
+                      onChange: (v) => {
+                        setDestination(v);
+                        // handleInputChange('location', v);
+                      },
+                      placeholder: "Search for a destination...",
+                      styles: {
+                        control: (provided) => ({
+                          ...provided,
+                          borderRadius: "0.5rem",
+                          border: "1.5px solid #e2e8f0",
+                          boxShadow: "none",
+                          "&:hover": {
+                            borderColor: "#cbd5e1",
+                          },
+                        }),
+                        option: (provided, state) => ({
+                          ...provided,
+                          backgroundColor: state.isFocused
+                            ? "#f1f5f9"
+                            : "white",
+                          color: "#1e293b",
+                          cursor: "pointer",
+                          zIndex: "40"
+                        }),
+                        menu: (provided) => ({
+                          ...provided,
+                          zIndex: "40", // Ensures Google Places dropdown is below the DatePicker
+                        }),
+                      },
+                    }}
+                  />
                 </div>
               </div>
+              {/* <div className="flex">
+                <DateInput
+                  label="Start Date"
+                  selectedDate={startDate}
+                  setSelectedDate={setStartDate}
+                  minDate={new Date()}
+                />
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-1">
-                    Start Date
-                  </label>
-                  <div className="relative">
-                    <Calendar className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                    <input
-                      type="date"
-                      id="startDate"
-                      value={startDate}
-                      onChange={(e) => setStartDate(e.target.value)}
-                      min={new Date().toISOString().split('T')[0]}
-                      className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                <DateInput
+                  label="End Date"
+                  selectedDate={endDate}
+                  setSelectedDate={setEndDate}
+                  minDate={startDate || new Date()}
+                />
+              </div> */}
+              <div className="w-full max-w-2xl">
+                {/* Responsive Flexbox: Two columns on large screens, one column on small screens */}
+                <div className="flex flex-col md:flex-row gap-4">
+                  {/* Start Date Picker - Takes 50% Width on Large Screens */}
+                  <div className="w-full md:w-1/2">
+                    <DateInput
+                      label="Start Date"
+                      selectedDate={startDate}
+                      setSelectedDate={setStartDate}
+                      minDate={new Date()}
                     />
                   </div>
-                </div>
-                <div>
-                  <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-1">
-                    End Date
-                  </label>
-                  <div className="relative">
-                    <Calendar className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                    <input
-                      type="date"
-                      id="endDate"
-                      value={endDate}
-                      onChange={(e) => setEndDate(e.target.value)}
-                      min={startDate || new Date().toISOString().split('T')[0]}
-                      className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+
+                  {/* End Date Picker - Takes 50% Width on Large Screens */}
+                  <div className="w-full md:w-1/2">
+                    <DateInput
+                      label="End Date"
+                      selectedDate={endDate}
+                      setSelectedDate={setEndDate}
+                      minDate={startDate || new Date()}
                     />
                   </div>
                 </div>
@@ -184,21 +233,29 @@ export default function PlanTripPage() {
                       Travel Interests
                     </label>
                     <div className="flex flex-wrap gap-2">
-                      {['Culture', 'Nature', 'Food', 'Adventure', 'History', 'Shopping', 'Relaxation'].map((interest) => (
+                      {[
+                        "Culture",
+                        "Nature",
+                        "Food",
+                        "Adventure",
+                        "History",
+                        "Shopping",
+                        "Relaxation",
+                      ].map((interest) => (
                         <button
                           key={interest}
                           type="button"
                           onClick={() => {
-                            setInterests(prev => 
+                            setInterests((prev) =>
                               prev.includes(interest)
-                                ? prev.filter(i => i !== interest)
+                                ? prev.filter((i) => i !== interest)
                                 : [...prev, interest]
                             );
                           }}
                           className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                             interests.includes(interest)
-                              ? 'bg-primary-600 text-white'
-                              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                              ? "bg-primary-600 text-white"
+                              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                           }`}
                         >
                           {interest}
@@ -212,15 +269,15 @@ export default function PlanTripPage() {
                       Budget Range
                     </label>
                     <div className="flex gap-4">
-                      {['budget', 'medium', 'luxury'].map((b) => (
+                      {["budget", "medium", "luxury"].map((b) => (
                         <button
                           key={b}
                           type="button"
                           onClick={() => setBudget(b)}
                           className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium capitalize transition-colors ${
                             budget === b
-                              ? 'bg-primary-600 text-white'
-                              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                              ? "bg-primary-600 text-white"
+                              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                           }`}
                         >
                           {b}
@@ -265,7 +322,9 @@ export default function PlanTripPage() {
         <div>
           <div className="flex items-center gap-2 mb-6">
             <Globe className="w-5 h-5 text-primary-600" />
-            <h2 className="text-xl font-semibold text-gray-900">Popular Destinations</h2>
+            <h2 className="text-xl font-semibold text-gray-900">
+              Popular Destinations
+            </h2>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
             {popularDestinations.map((dest) => (
