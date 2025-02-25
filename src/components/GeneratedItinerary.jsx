@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { getMapsLoader } from '../utils/mapsLoader';
 import emailService from "../services/emailService";
+import { useAuthStore } from "../store/authStore";
 
 
 const formatDate = (dayIndex, tripData) => {
@@ -132,10 +133,32 @@ function GeneratedItinerary() {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const markersRef = useRef([]);
+  const { user } = useAuthStore();
+  const [isLargeScreen, setIsLargeScreen] = useState(false);
+
 
   useEffect(() => {
-    if (!location.state?.aiGeneratedPlan) {
+    // Function to check screen size dynamically
+    const checkScreenSize = () => {
+      setIsLargeScreen(window.innerWidth >= 768);
+    };
+
+    // Run check once on mount
+    checkScreenSize();
+
+    // Listen for screen resize
+    window.addEventListener("resize", checkScreenSize);
+
+    return () => window.removeEventListener("resize", checkScreenSize);
+  }, []);
+
+  useEffect(() => {
+
+    if (!location.state?.aiGeneratedPlan ) {
       navigate('/plan-trip');
+      return;
+    }
+    if(!isLargeScreen) {
       return;
     }
 
@@ -226,6 +249,7 @@ function GeneratedItinerary() {
             throw new Error(`Geocoding failed: ${status}`);
           }
         });
+        setLoading(false);
       } catch (error) {
         console.error('Error initializing map:', error);
         setMapError(error.message);
@@ -235,7 +259,8 @@ function GeneratedItinerary() {
     };
 
     initializeMap();
-  }, [location.state, navigate]);
+  }, [location.state, navigate, isLargeScreen]);
+
 
   if (loading) {
     return (
@@ -268,7 +293,8 @@ function GeneratedItinerary() {
   const heroImage = getDestinationImage(destination);
   const handleShare = async () => {
     // TODO: Implement share functionality
-    console.log("Sharing email itinerary...");
+    console.log(`Sharing email itinerary...," , Trip:: ${JSON.stringify(tripPlan)} user::: ${JSON.stringify(user)}`);
+
     //modify the data to send for email
     // await emailService.sendEmail(days, trip, user);
   };
@@ -278,7 +304,7 @@ function GeneratedItinerary() {
     <div className="min-h-screen bg-gray-50">
       <div className="flex h-screen">
         {/* Left Side - Content */}
-        <div className="w-1/2 h-full overflow-y-auto">
+        <div className="w-full md:w-1/2 h-full overflow-y-auto">
           {/* Hero Header */}
           <div className="relative h-[300px]">
             <img
@@ -383,7 +409,7 @@ function GeneratedItinerary() {
                           <div className="flex items-center justify-between text-sm">
                             <div className="flex items-center gap-1 text-gray-500">
                               <MapPin className="w-4 h-4" />
-                              <span className="truncate">{hotel.address}</span>
+                              <span>{hotel.address}</span>
                             </div>
                             <span className="font-medium text-primary-600">
                               {hotel.pricePerNight}
@@ -500,10 +526,10 @@ function GeneratedItinerary() {
                                     <p className="text-sm text-gray-600 mt-1">
                                       {restaurant.cuisine} Cuisine
                                     </p>
-                                    <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
+                                    <div className="flex items-center gap-2 mt-2 text-sm text-gray-500">
                                       <div className="flex items-center gap-1">
                                         <MapPin className="w-4 h-4" />
-                                        <span className="truncate">
+                                        <span>
                                           {restaurant.address}
                                         </span>
                                       </div>
@@ -528,7 +554,7 @@ function GeneratedItinerary() {
         </div>
 
         {/* Right Side - Map */}
-        <div className="w-1/2 relative">
+        <div className="hidden md:block md:w-1/2 relative">
           <div ref={mapRef} className="absolute inset-0" />
           {mapError && (
             <div className="absolute inset-0 flex items-center justify-center bg-gray-50">

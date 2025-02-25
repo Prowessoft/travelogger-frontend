@@ -323,7 +323,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }) {
                   <span className="px-3 text-gray-500 text-sm">or</span>
                   <div className="flex-grow border-t border-gray-300"></div>
                 </div>
-                <div class="mt-4">
+                <div className="mt-4">
                   <GoogleLoginButton />
                 </div>
               </div>

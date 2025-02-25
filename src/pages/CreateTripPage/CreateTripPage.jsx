@@ -9,6 +9,8 @@ import { toast, Toaster } from 'sonner';
 import { generateTripPlan } from '../../services/aiService';
 import { enrichItineraryWithPhotos } from '../../services/placesService';
 import { useTripStore } from '../../store/tripStore';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const LoadingScreen = () => (
   <div className="fixed inset-0 bg-white z-50">
@@ -306,6 +308,39 @@ export default function CreateTripPage() {
     handleInputChange('location', `${dest.name}, ${dest.country}`);
   };
 
+  const DateInput = ({ label, selectedDate, setData, minDate }) => {
+    return (
+      <div className="w-full">
+        <label className="block text-sm text-gray-700 font-medium mb-1">{label}</label>
+        <div className="relative w-full">
+          {/* Calendar Icon */}
+          {/* <div className='absolute z-10'>
+          <Calendar className="  left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5 pointer-events-none" />
+          </div> */}
+          <div className="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none z-10">
+          <Calendar className="text-gray-500 w-5 h-5" />
+        </div>
+          
+          {/* <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5 pointer-events-none" /> */}
+
+
+  
+          {/* Date Picker */}
+          <DatePicker
+            selected={selectedDate}
+            onChange={(date) => handleInputChange(setData, date)}
+            minDate={minDate}
+            dateFormat="MM/dd/yyyy" // Changed to MM/DD/YYYY format
+            placeholderText="MM/DD/YYYY"
+            className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white outline-none text-gray-900"
+            wrapperClassName="w-full relative"
+            popperClassName="z-50"
+          />
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 pt-20">
       {isGenerating && <LoadingScreen />}
@@ -327,8 +362,16 @@ export default function CreateTripPage() {
                 <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg">
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
-                      <svg className="h-5 w-5 text-red-500" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                      <svg
+                        className="h-5 w-5 text-red-500"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                          clipRule="evenodd"
+                        />
                       </svg>
                     </div>
                     <div className="ml-3">
@@ -339,84 +382,99 @@ export default function CreateTripPage() {
               )}
 
               <div className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">Where would you like to go?</h2>
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                  Where would you like to go?
+                </h2>
                 <GooglePlacesAutocomplete
                   apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
                   selectProps={{
                     value: place,
                     onChange: (v) => {
                       setPlace(v);
-                      handleInputChange('location', v);
+                      handleInputChange("location", v);
                     },
                     placeholder: "Search for a destination...",
                     styles: {
                       control: (provided) => ({
                         ...provided,
-                        borderRadius: '0.75rem',
-                        border: '2px solid #e2e8f0',
-                        boxShadow: 'none',
-                        '&:hover': {
-                          borderColor: '#cbd5e1'
-                        }
+                        borderRadius: "0.75rem",
+                        border: "2px solid #e2e8f0",
+                        boxShadow: "none",
+                        "&:hover": {
+                          borderColor: "#cbd5e1",
+                        },
                       }),
                       option: (provided, state) => ({
                         ...provided,
-                        backgroundColor: state.isFocused ? '#f1f5f9' : 'white',
-                        color: '#1e293b',
-                        cursor: 'pointer'
-                      })
-                    }
+                        backgroundColor: state.isFocused ? "#f1f5f9" : "white",
+                        color: "#1e293b",
+                        cursor: "pointer",
+                      }),
+                      menu: (provided) => ({
+                        ...provided,
+                        zIndex: "40", // Ensures Google Places dropdown is below the DatePicker
+                      }),
+                    },
                   }}
                 />
               </div>
 
               <div className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">When are you planning to travel?</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
-                    <div className="relative">
-                      <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                      <input
-                        type="date"
-                        min={new Date().toISOString().split('T')[0]}
-                        value={formData.startDate}
-                        onChange={(e) => handleInputChange('startDate', e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
-                    <div className="relative">
-                      <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                      <input
-                        type="date"
-                        min={formData.startDate || new Date().toISOString().split('T')[0]}
-                        value={formData.endDate}
-                        onChange={(e) => handleInputChange('endDate', e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                      />
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                  When are you planning to travel?
+                </h2>
+                <div className="flex flex-col md:flex-row gap-4">
+                  <div className="w-full max-w-2xl">
+                    {/* Responsive Flexbox: Two columns on large screens, one column on small screens */}
+                    <div className="flex flex-col md:flex-row gap-4">
+                      {/* Start Date Picker - Takes 50% Width on Large Screens */}
+                      <div className="w-full md:w-1/2">
+                        <DateInput
+                          label="Start Date"
+                          selectedDate={formData.startDate}
+                          setData= "startDate"
+                          // onChange={(e) => handleInputChange('startDate', e.target.value)}
+                          minDate={new Date().toISOString().split('T')[0]}
+                        />
+                      </div>
+
+                      {/* End Date Picker - Takes 50% Width on Large Screens */}
+                      <div className="w-full md:w-1/2">
+                        <DateInput
+                          label="End Date"
+                          selectedDate={formData.endDate}
+                          setData= "endDate"
+                          // onChange={(e) => handleInputChange('endDate', e.target.value)}
+                          minDate={formData.startDate || new Date().toISOString().split('T')[0]}
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
 
               <div className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">Who's traveling?</h2>
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                  Who's traveling?
+                </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   {travelerOptions.map((option) => (
                     <div
                       key={option.title}
-                      onClick={() => handleInputChange('travelers', option.people)}
+                      onClick={() =>
+                        handleInputChange("travelers", option.people)
+                      }
                       className={`p-6 rounded-xl cursor-pointer transition-all duration-300
-                        ${formData.travelers === option.people 
-                          ? 'bg-primary-50 border-primary-500 shadow-lg' 
-                          : 'bg-white border-gray-200 hover:bg-gray-50'
+                        ${
+                          formData.travelers === option.people
+                            ? "bg-primary-50 border-primary-500 shadow-lg"
+                            : "bg-white border-gray-200 hover:bg-gray-50"
                         } border-2`}
                     >
                       <div className="text-4xl mb-3">{option.icon}</div>
-                      <h3 className="text-lg font-bold text-gray-900">{option.title}</h3>
+                      <h3 className="text-lg font-bold text-gray-900">
+                        {option.title}
+                      </h3>
                       <p className="text-sm text-gray-600">{option.desc}</p>
                     </div>
                   ))}
@@ -424,20 +482,25 @@ export default function CreateTripPage() {
               </div>
 
               <div className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">What's your budget range?</h2>
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                  What's your budget range?
+                </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   {budgetOptions.map((option) => (
                     <div
                       key={option.title}
-                      onClick={() => handleInputChange('budget', option.value)}
+                      onClick={() => handleInputChange("budget", option.value)}
                       className={`p-6 rounded-xl cursor-pointer transition-all duration-300
-                        ${formData.budget === option.value 
-                          ? 'bg-primary-50 border-primary-500 shadow-lg' 
-                          : 'bg-white border-gray-200 hover:bg-gray-50'
+                        ${
+                          formData.budget === option.value
+                            ? "bg-primary-50 border-primary-500 shadow-lg"
+                            : "bg-white border-gray-200 hover:bg-gray-50"
                         } border-2`}
                     >
                       <div className="text-4xl mb-3">{option.icon}</div>
-                      <h3 className="text-lg font-bold text-gray-900">{option.title}</h3>
+                      <h3 className="text-lg font-bold text-gray-900">
+                        {option.title}
+                      </h3>
                       <p className="text-sm text-gray-600">{option.desc}</p>
                     </div>
                   ))}
@@ -446,8 +509,12 @@ export default function CreateTripPage() {
 
               <div className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-xl font-semibold text-gray-900">Select Your Preferred Cuisines</h2>
-                  <span className="text-sm text-gray-500">Optional • Choose up to 3</span>
+                  <h2 className="text-xl font-semibold text-gray-900">
+                    Select Your Preferred Cuisines
+                  </h2>
+                  <span className="text-sm text-gray-500">
+                    Optional • Choose up to 3
+                  </span>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                   {cuisineOptions.map((cuisine) => (
@@ -456,19 +523,28 @@ export default function CreateTripPage() {
                       onClick={() => {
                         const currentCuisines = formData.cuisines || [];
                         if (currentCuisines.includes(cuisine.title)) {
-                          handleInputChange('cuisines', currentCuisines.filter(c => c !== cuisine.title));
+                          handleInputChange(
+                            "cuisines",
+                            currentCuisines.filter((c) => c !== cuisine.title)
+                          );
                         } else if (currentCuisines.length < 3) {
-                          handleInputChange('cuisines', [...currentCuisines, cuisine.title]);
+                          handleInputChange("cuisines", [
+                            ...currentCuisines,
+                            cuisine.title,
+                          ]);
                         }
                       }}
                       className={`p-6 rounded-xl cursor-pointer transition-all duration-300
-                        ${formData.cuisines?.includes(cuisine.title)
-                          ? 'bg-primary-50 border-primary-500 shadow-lg'
-                          : 'bg-white border-gray-200 hover:bg-gray-50'
+                        ${
+                          formData.cuisines?.includes(cuisine.title)
+                            ? "bg-primary-50 border-primary-500 shadow-lg"
+                            : "bg-white border-gray-200 hover:bg-gray-50"
                         } border-2`}
                     >
                       <div className="text-4xl mb-3">{cuisine.icon}</div>
-                      <h3 className="text-lg font-bold text-gray-900">{cuisine.title}</h3>
+                      <h3 className="text-lg font-bold text-gray-900">
+                        {cuisine.title}
+                      </h3>
                       <p className="text-sm text-gray-600">{cuisine.desc}</p>
                     </div>
                   ))}
@@ -478,7 +554,9 @@ export default function CreateTripPage() {
               <div className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all">
                 <div className="flex items-center gap-2 mb-6">
                   <Globe className="w-5 h-5 text-primary-600" />
-                  <h2 className="text-xl font-semibold text-gray-900">Popular Destinations</h2>
+                  <h2 className="text-xl font-semibold text-gray-900">
+                    Popular Destinations
+                  </h2>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   {popularDestinations.map((dest) => (
@@ -494,7 +572,9 @@ export default function CreateTripPage() {
                       />
                       <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors" />
                       <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-                        <p className="text-white font-medium text-sm">{dest.name}</p>
+                        <p className="text-white font-medium text-sm">
+                          {dest.name}
+                        </p>
                         <p className="text-white/80 text-xs">{dest.country}</p>
                       </div>
                     </button>
@@ -507,9 +587,10 @@ export default function CreateTripPage() {
                 disabled={isGenerating}
                 className="w-full relative py-3 rounded-lg text-white font-medium text-lg flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden group"
                 style={{
-                  background: 'linear-gradient(-45deg, #FF0000, #FF8C00, #FFD700, #00FF00, #00FFFF, #0000FF, #FF00FF)',
-                  backgroundSize: '400% 400%',
-                  animation: 'gradient 15s ease infinite',
+                  background:
+                    "linear-gradient(-45deg, #FF0000, #FF8C00, #FFD700, #00FF00, #00FFFF, #0000FF, #FF00FF)",
+                  backgroundSize: "400% 400%",
+                  animation: "gradient 15s ease infinite",
                 }}
               >
                 <style>
