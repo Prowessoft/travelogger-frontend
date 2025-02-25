@@ -89,11 +89,6 @@ export default function PlanTripPage() {
           <div className="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none z-10">
           <Calendar className="text-gray-500 w-5 h-5" />
         </div>
-          
-          {/* <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5 pointer-events-none" /> */}
-
-
-  
           {/* Date Picker */}
           <DatePicker
             selected={selectedDate}

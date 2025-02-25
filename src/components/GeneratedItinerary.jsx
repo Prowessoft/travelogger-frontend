@@ -153,16 +153,16 @@ function GeneratedItinerary() {
   }, []);
 
   useEffect(() => {
+    setTripPlan(location.state.aiGeneratedPlan);
 
     if (!location.state?.aiGeneratedPlan ) {
       navigate('/plan-trip');
       return;
     }
     if(!isLargeScreen) {
+      setLoading(false);
       return;
     }
-
-    setTripPlan(location.state.aiGeneratedPlan);
 
     const initializeMap = async () => {
       try {
