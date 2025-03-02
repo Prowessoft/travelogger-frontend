@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-const createItineraryStore = (set) => ({
+const createItineraryStore = (set, get) => ({
   days: [],
   selectedDay: 0,
   initializeDays: (days) => set({ days }),
@@ -12,6 +12,8 @@ const createItineraryStore = (set) => ({
           : day
       ),
     })),
+  saveItinerary: (itinerary) => set({ itinerary }),
+  getItinerary: () => get().itinerary, 
   removeActivity: (dayIndex, activityId) =>
     set((state) => ({
       days: state.days.map((day, idx) =>

@@ -7,7 +7,7 @@ if (!apiKey) {
 }
 
 const genAI = new GoogleGenerativeAI(apiKey);
-const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
 
 const generationConfig = {
   temperature: 0.7,
@@ -24,45 +24,134 @@ Duration: {days} days
 Travelers: {travelers}
 Budget: {budget}
 Cuisines: {cuisines}
+StartDate: {startDate}
+EndDate: {endDate}
+
 
 Return ONLY the following JSON structure with no additional text:
 
 {
   "tripDetails": {
-    "location": string,
+    "destination": {
+      "coordinates": string,
+      "label": string
+    }
     "duration": string,
     "travelers": number,
-    "budget": string
+    "budget": string,
+    "startDate": string,
+    "endDate": string,
+    "cuisines": string
   },
-  "hotels": [
-    {
-      "name": string,
-      "address": string,
-      "pricePerNight": string,
-      "rating": number,
-      "description": string
-    }
-  ],
-  "dailyItinerary": [
+  
+  "days": [
     {
       "day": number,
       "date": string,
-      "activities": [
-        {
-          "name": string,
-          "description": string,
-          "duration": string,
-          "price": string
-        }
-      ],
-      "restaurants": [
-        {
-          "name": string,
-          "cuisine": string,
-          "address": string,
-          "priceRange": string
-        }
-      ]
+      "sections": {
+        "activities": [
+          { "bookingInfo": string,
+            "contact": {
+              "bookingInfo": string,
+              "phone": string,
+              "website": string,
+            },
+            "cuisine": string,
+            "address": string,
+            "duration": string,
+            "endTime": string,
+            "location": {
+              "coordinates": [],
+              "address": string,
+              "placeId": string,
+            },
+            "operatingHours": {
+              "isOpen": boolean,
+              "periods": [
+                {
+                  "day": string,
+                  "hours": string
+                }
+              ],
+              "placeId": string,
+            },
+            "price": string,
+            "priceLevel": string,
+            "rating": string,
+            "startTime": string,
+            "title": string,
+            "userRatingsTotal": string
+          }
+        ],
+        "hotels": [
+          { "bookingInfo": string,
+            "contact": {
+              "bookingInfo": string,
+              "phone": string,
+              "website": string,
+            },
+            "cuisine": string,
+            "address": string,
+            "duration": string,
+            "endTime": string,
+            "location": {
+              "coordinates": [],
+              "address": string,
+              "placeId": string,
+            },
+            "operatingHours": {
+              "isOpen": boolean,
+              "periods": [
+                {
+                  "day": string,
+                  "hours": string
+                }
+              ],
+              "placeId": string,
+            },
+            "price": string,
+            "priceLevel": string,
+            "rating": string,
+            "startTime": string,
+            "title": string,
+            "userRatingsTotal": string
+          }
+        ],
+        "restaurants": [
+          { "bookingInfo": string,
+            "contact": {
+              "bookingInfo": string,
+              "phone": string,
+              "website": string,
+            },
+            "cuisine": string,
+            "address": string,
+            "duration": string,
+            "endTime": string,
+            "location": {
+              "coordinates": [],
+              "address": string,
+              "placeId": string,
+            },
+            "operatingHours": {
+              "isOpen": boolean,
+              "periods": [
+                {
+                  "day": string,
+                  "hours": string
+                }
+              ],
+              "placeId": string,
+            },
+            "price": string,
+            "priceLevel": string,
+            "rating": string,
+            "startTime": string,
+            "title": string,
+            "userRatingsTotal": string
+          }
+        ]
+      }
     }
   ]
 }
@@ -73,9 +162,9 @@ Rules:
 3. All strings must be properly quoted
 4. No trailing commas
 5. Keep descriptions concise
-6. Include 3-4 hotels
-7. Include 3-4 activities per day
-8. Include 2-3 restaurants per day
+6. Include 1-2 hotels per day in array
+7. Include 3-4 activities per day in array
+8. Include 2-3 restaurants per day in array
 9. Use real place names and addresses
 10. Match prices to the budget level`;
 
@@ -111,11 +200,11 @@ const extractJSON = (text) => {
 
 const validateStructure = (data) => {
   const required = {
-    tripDetails: ['location', 'duration', 'travelers', 'budget'],
-    hotels: ['name', 'address', 'pricePerNight', 'rating', 'description'],
-    dailyItinerary: {
-      root: ['day', 'date', 'activities', 'restaurants'],
+    tripDetails: ['destination', 'duration', 'travelers', 'budget', 'startDate', 'endDate', 'cuisines'],
+    days: {
+      root: ['day', 'date', 'sections'],
       activities: ['name', 'description', 'duration', 'price'],
+      hotels: ['name', 'address', 'pricePerNight', 'rating', 'description'],
       restaurants: ['name', 'cuisine', 'address', 'priceRange']
     }
   };
@@ -132,40 +221,44 @@ const validateStructure = (data) => {
   }
 
   // Check hotels
-  if (!Array.isArray(data.hotels) || data.hotels.length === 0) {
-    throw new Error('Missing or invalid hotels array');
-  }
+  // if (!Array.isArray(data.hotels) || data.hotels.length === 0) {
+  //   throw new Error('Missing or invalid hotels array');
+  // }
   
-  data.hotels.forEach((hotel, index) => {
-    for (const field of required.hotels) {
-      if (!hotel[field]) {
-        throw new Error(`Missing required field in hotel ${index + 1}: ${field}`);
-      }
-    }
-  });
+  // data.hotels.forEach((hotel, index) => {
+  //   for (const field of required.hotels) {
+  //     if (!hotel[field]) {
+  //       throw new Error(`Missing required field in hotel ${index + 1}: ${field}`);
+  //     }
+  //   }
+  // });
 
   // Check daily itinerary
-  if (!Array.isArray(data.dailyItinerary) || data.dailyItinerary.length === 0) {
+  if (!Array.isArray(data.days) || data.days.length === 0) {
     // Try to convert from object to array if needed
-    if (data.dailyItinerary && typeof data.dailyItinerary === 'object') {
-      data.dailyItinerary = Object.values(data.dailyItinerary);
+    if (data.days && typeof data.days === 'object') {
+      data.days = Object.values(data.days);
     } else {
-      throw new Error('Missing or invalid dailyItinerary');
+      throw new Error('Missing or invalid days');
     }
   }
 
-  data.dailyItinerary.forEach((day, dayIndex) => {
-    for (const field of required.dailyItinerary.root) {
+  data.days.forEach((day, dayIndex) => {
+    for (const field of required.days.root) {
       if (!day[field]) {
         throw new Error(`Missing required field in day ${dayIndex + 1}: ${field}`);
       }
     }
 
-    if (!Array.isArray(day.activities)) {
+    if (!Array.isArray(day.sections.activities)) {
       throw new Error(`Invalid activities array in day ${dayIndex + 1}`);
     }
 
-    if (!Array.isArray(day.restaurants)) {
+    if (!Array.isArray(day.sections.hotels)) {
+      throw new Error(`Invalid hotels array in day ${dayIndex + 1}`);
+    }
+
+    if (!Array.isArray(day.sections.restaurants)) {
       throw new Error(`Invalid restaurants array in day ${dayIndex + 1}`);
     }
   });
@@ -197,8 +290,9 @@ export const generateTripPlan = async (tripData) => {
       .replace('{days}', days)
       .replace('{travelers}', travelers)
       .replace('{budget}', budget)
-      .replace('{cuisines}', cuisines.join(', ') || 'any');
-
+      .replace('{cuisines}', cuisines.join(', ') || 'any')
+      .replace('{startDate}', startDate)
+      .replace('{endDate}', endDate);
     const result = await model.generateContent({
       contents: [{ role: "user", parts: [{ text: prompt }]}],
       generationConfig,

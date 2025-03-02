@@ -205,7 +205,7 @@ export default function PlanTripPage() {
                       label="Start Date"
                       selectedDate={startDate}
                       setSelectedDate={setStartDate}
-                      minDate={new Date()}
+                      minDate={new Date().toISOString().split('T')[0]}
                     />
                   </div>
 
@@ -215,7 +215,7 @@ export default function PlanTripPage() {
                       label="End Date"
                       selectedDate={endDate}
                       setSelectedDate={setEndDate}
-                      minDate={startDate || new Date()}
+                      minDate={startDate || new Date().toISOString().split('T')[0]}
                     />
                   </div>
                 </div>

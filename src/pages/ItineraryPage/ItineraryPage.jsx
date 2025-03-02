@@ -78,6 +78,7 @@ export default function ItineraryPage() {
     reorderActivities,
     setSelectedDay,
     initializeDays,
+    getItinerary
   } = useItineraryStore();
   const { user } = useAuthStore();
   const [expandedDay, setExpandedDay] = useState(0);
@@ -133,7 +134,9 @@ export default function ItineraryPage() {
   }, []);
 
   useEffect(() => {
-    if (!trip || itineraryId) {
+    const aiItinerary = getItinerary();
+
+    if (!trip || itineraryId || aiItinerary) {
       // navigate('/plan-trip');
       console.log("inside:::");
       return;
@@ -160,22 +163,27 @@ export default function ItineraryPage() {
 
   useEffect(() => {
     const loadSavedItinerary = async () => {
-      if (!itineraryId) {
+      const aiItinerary = getItinerary();
+      if (!itineraryId && !aiItinerary) {
         return;
       }
-
       try {
         setLoading(true);
-        const savedItinerary = await itineraryService.getItinerary(itineraryId);
+        let savedItinerary;
+        if (itineraryId) {
+          savedItinerary = await itineraryService.getItinerary(itineraryId);
+                  // Set trip data
+          setTrip({
+            destination: savedItinerary.tripDetails.destination.name,
+            tripImg: getDestinationImage(savedItinerary.tripDetails.destination),
+            startDate: savedItinerary.tripDetails.startDate,
+            endDate: savedItinerary.tripDetails.endDate,
+            id: savedItinerary?.id,
+          });
+        } else {
+          savedItinerary = aiItinerary;
+        }
 
-        // Set trip data
-        setTrip({
-          destination: savedItinerary.tripDetails.destination.name,
-          tripImg: getDestinationImage(savedItinerary.tripDetails.destination),
-          startDate: savedItinerary.tripDetails.startDate,
-          endDate: savedItinerary.tripDetails.endDate,
-          id: savedItinerary.id,
-        });
 
         // Transform days data
         const transformedDays = savedItinerary.days.map((day) => {
@@ -502,9 +510,9 @@ export default function ItineraryPage() {
           <div className="space-y-4">
             {items.map((item, itemIndex) => (
               <SortableActivityItem
-                key={item.id}
+                key={itemIndex}
                 activity={item}
-                onRemove={() => removeActivity(dayIndex, item.id)}
+                onRemove={() => removeActivity(dayIndex, itemIndex)}
                 number={itemIndex + 1}
                 nextActivity={items[itemIndex + 1]}
               />

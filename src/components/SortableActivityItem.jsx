@@ -5,7 +5,7 @@ import {
   Clock, 
   Trash2, 
   GripVertical, 
-  MapPin, 
+  MapPin,  
   Timer, 
   Route, 
   Calendar, 
@@ -40,7 +40,7 @@ export function SortableActivityItem({ activity, onRemove, number, nextActivity 
     transform,
     transition,
     isDragging
-  } = useSortable({ id: activity.id });
+  } = useSortable({ id: number });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -172,11 +172,11 @@ export function SortableActivityItem({ activity, onRemove, number, nextActivity 
                 {isEditing ? (
                   <form onSubmit={handleSubmit} className="space-y-3">
                     <div>
-                      <label htmlFor={`title-${activity.id}`} className="block text-xs font-medium text-gray-700 mb-1">
+                      <label htmlFor={`title-${number}`} className="block text-xs font-medium text-gray-700 mb-1">
                         Activity Title
                       </label>
                       <input
-                        id={`title-${activity.id}`}
+                        id={`title-${number}`}
                         type="text"
                         value={formData.title}
                         onChange={(e) => handleInputChange('title', e.target.value)}
@@ -188,11 +188,11 @@ export function SortableActivityItem({ activity, onRemove, number, nextActivity 
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
-                        <label htmlFor={`start-${activity.id}`} className="block text-xs font-medium text-gray-700 mb-1">
+                        <label htmlFor={`start-${number}`} className="block text-xs font-medium text-gray-700 mb-1">
                           Start Time
                         </label>
                         <input
-                          id={`start-${activity.id}`}
+                          id={`start-${number}`}
                           type="time"
                           value={formData.startTime}
                           onChange={(e) => handleInputChange('startTime', e.target.value)}
@@ -200,11 +200,11 @@ export function SortableActivityItem({ activity, onRemove, number, nextActivity 
                         />
                       </div>
                       <div>
-                        <label htmlFor={`end-${activity.id}`} className="block text-xs font-medium text-gray-700 mb-1">
+                        <label htmlFor={`end-${number}`} className="block text-xs font-medium text-gray-700 mb-1">
                           End Time
                         </label>
                         <input
-                          id={`end-${activity.id}`}
+                          id={`end-${number}`}
                           type="time"
                           value={formData.endTime}
                           onChange={(e) => handleInputChange('endTime', e.target.value)}
@@ -215,11 +215,11 @@ export function SortableActivityItem({ activity, onRemove, number, nextActivity 
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
-                        <label htmlFor={`price-${activity.id}`} className="block text-xs font-medium text-gray-700 mb-1">
+                        <label htmlFor={`price-${number}`} className="block text-xs font-medium text-gray-700 mb-1">
                           Price
                         </label>
                         <input
-                          id={`price-${activity.id}`}
+                          id={`price-${number}`}
                           type="text"
                           value={formData.price}
                           onChange={(e) => handleInputChange('price', e.target.value)}
@@ -228,11 +228,11 @@ export function SortableActivityItem({ activity, onRemove, number, nextActivity 
                         />
                       </div>
                       <div>
-                        <label htmlFor={`url-${activity.id}`} className="block text-xs font-medium text-gray-700 mb-1">
+                        <label htmlFor={`url-${number}`} className="block text-xs font-medium text-gray-700 mb-1">
                           Website URL
                         </label>
                         <input
-                          id={`url-${activity.id}`}
+                          id={`url-${number}`}
                           type="url"
                           value={formData.url}
                           onChange={(e) => handleInputChange('url', e.target.value)}
@@ -243,11 +243,11 @@ export function SortableActivityItem({ activity, onRemove, number, nextActivity 
                     </div>
 
                     <div>
-                      <label htmlFor={`notes-${activity.id}`} className="block text-xs font-medium text-gray-700 mb-1">
+                      <label htmlFor={`notes-${number}`} className="block text-xs font-medium text-gray-700 mb-1">
                         Notes
                       </label>
                       <textarea
-                        id={`notes-${activity.id}`}
+                        id={`notes-${number}`}
                         value={formData.notes}
                         onChange={(e) => handleInputChange('notes', e.target.value)}
                         rows={2}
@@ -279,7 +279,7 @@ export function SortableActivityItem({ activity, onRemove, number, nextActivity 
                   <div className="flex flex-col gap-1">
                     <div className="flex items-center justify-between">
                       <h3 className="font-medium text-gray-900 text-sm">
-                        {activity.title}
+                        {activity.title || 'title'}
                       </h3>
                       {
                       // activity.rating && (
@@ -295,7 +295,7 @@ export function SortableActivityItem({ activity, onRemove, number, nextActivity 
                       {activity.location && (
                         <div className="flex items-center">
                           <MapPin className="w-3 h-3 mr-1 flex-shrink-0" />
-                          <span>{activity.location.name}</span>
+                          <span>{activity.location.name || activity.address || 'location'}</span>
                         </div>
                       )}
                       {
@@ -345,7 +345,7 @@ export function SortableActivityItem({ activity, onRemove, number, nextActivity 
               </div>
 
               <button
-                onClick={() => onRemove(activity.id)}
+                onClick={() => onRemove(number)}
                 className="text-gray-400 hover:text-primary-600 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity p-1.5 rounded-full hover:bg-gray-200"
                 aria-label={`Remove ${activity.title}`}
               >

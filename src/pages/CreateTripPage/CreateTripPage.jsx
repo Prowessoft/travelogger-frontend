@@ -9,8 +9,11 @@ import { toast, Toaster } from 'sonner';
 import { generateTripPlan } from '../../services/aiService';
 import { enrichItineraryWithPhotos } from '../../services/placesService';
 import { useTripStore } from '../../store/tripStore';
+import { useItineraryStore } from "../../store/itineraryStore";
+
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+
 
 const LoadingScreen = () => (
   <div className="fixed inset-0 bg-white z-50">
@@ -185,6 +188,7 @@ export default function CreateTripPage() {
   });
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState('');
+  const { saveItinerary } = useItineraryStore();
 
   useEffect(() => {
     const urlDestination = searchParams.get('destination');
@@ -258,17 +262,18 @@ export default function CreateTripPage() {
     if (isAIMode) {
       setIsGenerating(true);
       try {
-        toast.loading("Generating your personalized trip plan...");
+        // toast.loading("Generating your personalized trip plan...");
         
         const tripData = {
           ...formData,
-          location: formData.location || place.label,
+          destination: formData.location || place.label,
           isAIGenerated: true
         };
 
         const tripPlan = await generateTripPlan(tripData);
+        // toast.dismiss();
         
-        toast.loading("Finding photos for your destinations...");
+        // toast.loading("Finding photos for your destinations...");
         console.log('Before photo enrichment:', tripPlan);
         
         const enrichedPlan = await enrichItineraryWithPhotos(tripPlan);
@@ -276,16 +281,20 @@ export default function CreateTripPage() {
         
         setTrip(tripData);
 
-        toast.dismiss();
-        toast.success("Trip plan generated successfully!");
+        saveItinerary(enrichedPlan);
+        // toast.dismiss();
+        // toast.success("Trip plan generated successfully!");
+        setIsGenerating(false);
+        navigate('/itinerary');
+
         
-        navigate('/GeneratedItinerary', { 
-          state: { 
-            tripData: formData,
-            aiGeneratedPlan: enrichedPlan
-          },
-          replace: true
-        });
+        // navigate('/GeneratedItinerary', { 
+        //   state: { 
+        //     tripData: formData,
+        //     aiGeneratedPlan: enrichedPlan
+        //   },
+        //   replace: true
+        // });
       } catch (error) {
         console.error('Generation Error:', error);
         toast.dismiss();

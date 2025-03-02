@@ -31,8 +31,8 @@ const formatItineraryPayload = (days, trip, user) => {
           name: trip.destination?.label || ''
           // coordinates: [lat, lng]
         },
-        startDate: trip.startDate,
-        endDate: trip.endDate,
+        startDate: new Date(trip.startDate).toISOString().split('T')[0],
+        endDate: new Date(trip.endDate).toISOString().split('T')[0],
         budget: {
           currency: "USD",
           total: totalBudget,
@@ -75,7 +75,8 @@ const formatItineraryPayload = (days, trip, user) => {
                 priceLevel: null,
                 rating: hotel.rating || null,
                 userRatingsTotal: hotel.userRatingsTotal || 0,
-                photos: hotel?.photos && hotel?.photos?.length > 1 ? [hotel.photos[2]] : hotel.photos && hotel.photos.length > 0 ? [hotel.photos[1]] : [],
+                // photos: hotel?.photos && hotel?.photos?.length > 1 ? [hotel.photos[2]] : hotel.photos && hotel.photos.length > 0 ? [hotel.photos[1]] : [],
+                photos: [],
                 contact: {
                   phone: hotel.phone || '',
                   website: hotel.website || '',
@@ -104,7 +105,8 @@ const formatItineraryPayload = (days, trip, user) => {
                 priceLevel: null,
                 rating: activity.rating || null,
                 userRatingsTotal: activity.userRatingsTotal || 0,
-                photos: activity?.photos && activity.photos.length > 1 ? [activity.photos[2]] : activity.photos &&  activity.photos.length > 0 ? [activity.photos[1]] : [],
+                photos: [],
+                // photos: activity?.photos && activity.photos.length > 1 ? [activity.photos[2]] : activity.photos &&  activity.photos.length > 0 ? [activity.photos[1]] : [],
                 // activity.photos?.map(photo => ({
                   //   url: photo.url,
                   //   caption: photo.caption || ''
@@ -137,8 +139,9 @@ const formatItineraryPayload = (days, trip, user) => {
                 priceLevel: null,
                 rating: restaurant.rating || null,
                 userRatingsTotal: restaurant.userRatingsTotal || 0,
-                photos: restaurant?.photos && restaurant.photos.length > 1 ? [restaurant.photos[2]] : restaurant?.photos && restaurant.photos.length > 0 ? [restaurant.photos[1]] : [],
-                // restaurant.photos?.map(photo => ({
+                photos: [],
+                // photos: restaurant?.photos && restaurant.photos.length > 1 ? [restaurant.photos[2]] : restaurant?.photos && restaurant.photos.length > 0 ? [restaurant.photos[1]] : [],
+                                // restaurant.photos?.map(photo => ({
                   //   url: photo.url,
                   //   caption: photo.caption || ''
                 // })) || [],
@@ -151,7 +154,7 @@ const formatItineraryPayload = (days, trip, user) => {
                   isOpen: restaurant.isOpen || false,
                   periods: restaurant?.formattedHours && restaurant?.formattedHours[2] ? [restaurant.formattedHours[2]] || [] : null
                 },
-                cuisine: restaurant.cuisine || []
+                cuisine: []
               }))
           }
         };
