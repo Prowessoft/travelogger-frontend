@@ -295,7 +295,7 @@ export function SortableActivityItem({ activity, onRemove, number, nextActivity 
                       {activity.location && (
                         <div className="flex items-center">
                           <MapPin className="w-3 h-3 mr-1 flex-shrink-0" />
-                          <span>{activity.location.name || activity.address || 'location'}</span>
+                          <span>{activity.location.address || 'location'}</span>
                         </div>
                       )}
                       {

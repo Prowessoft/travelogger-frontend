@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
 import { toast, Toaster } from 'sonner';
-import { generateTripPlan } from '../../services/aiService';
+import { getAIitineraryData } from '../../services/aiService';
 import { enrichItineraryWithPhotos } from '../../services/placesService';
 import { useTripStore } from '../../store/tripStore';
 import { useItineraryStore } from "../../store/itineraryStore";
@@ -195,14 +195,14 @@ export default function CreateTripPage() {
     if (urlDestination) {
       const decodedDestination = decodeURIComponent(urlDestination);
       setPlace({ label: decodedDestination });
-      setFormData(prev => ({ ...prev, location: decodedDestination }));
+      setFormData(prev => ({ ...prev, location: decodedDestination.label }));
     }
   }, [searchParams]);
 
   const handleInputChange = (name, value) => {
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: value.label || value
     }));
     setError('');
   };
@@ -263,20 +263,22 @@ export default function CreateTripPage() {
       setIsGenerating(true);
       try {
         // toast.loading("Generating your personalized trip plan...");
-        
+        formData.startDate = start.toISOString().split('T')[0];
+        formData.endDate = end.toISOString().split('T')[0];
         const tripData = {
           ...formData,
-          destination: formData.location || place.label,
-          isAIGenerated: true
+          // destination: formData.location || place.label,
+          // isAIGenerated: true
         };
 
-        const tripPlan = await generateTripPlan(tripData);
+        // const tripPlan = await generateTripPlan(tripData);
         // toast.dismiss();
         
         // toast.loading("Finding photos for your destinations...");
-        console.log('Before photo enrichment:', tripPlan);
+        // console.log('Before photo enrichment:', tripPlan);
         
-        const enrichedPlan = await enrichItineraryWithPhotos(tripPlan);
+        // const enrichedPlan = await enrichItineraryWithPhotos(tripPlan);
+        const enrichedPlan = await getAIitineraryData(tripData);
         console.log('After photo enrichment:', enrichedPlan);
         
         setTrip(tripData);
@@ -305,7 +307,7 @@ export default function CreateTripPage() {
     } else {
       setTrip({
         ...formData,
-        location: formData.location || place.label,
+        location: formData.location.label || place.label,
         isAIGenerated: false
       });
       navigate('/itinerary');
@@ -471,6 +473,7 @@ export default function CreateTripPage() {
                     <div
                       key={option.title}
                       onClick={() =>
+                        // handleInputChange("travelers", option.people == 1 ? "solo" : option.people == 2 ? "couple" : "group")
                         handleInputChange("travelers", option.people)
                       }
                       className={`p-6 rounded-xl cursor-pointer transition-all duration-300

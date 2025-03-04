@@ -2,14 +2,15 @@ import axios from 'axios';
 
 // Create axios instance with default config
 const axiosInstance = axios.create({
-  baseURL: 'http://travelogger-backend.eba-2i3kpbc5.us-east-1.elasticbeanstalk.com/api', // Base URL for all requests
+  // baseURL: 'http://travelogger-backend.eba-2i3kpbc5.us-east-1.elasticbeanstalk.com/api', // Base URL for all requests
+  baseURL: 'http://api.dev.travelogger.info/api', // Base URL for all requests
   // baseURL: 'http://localhost:8080/api', // Base URL for all requests
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json'
   },
   withCredentials: false, // Disable CORS credentials
-  timeout: 10000,
+  timeout: 500000,
   // Add retry configuration
   retry: 3,
   retryDelay: 1000

@@ -1,4 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import axiosInstance from '../utils/axiosConfig';
+
 
 const apiKey = import.meta.env.VITE_GOOGLE_GEMINI_AI_API_KEY;
 
@@ -319,3 +321,16 @@ export const generateTripPlan = async (tripData) => {
     throw new Error(errorMessage);
   }
 };
+
+export const getAIitineraryData = async (tripData) => {
+  // return await generateTripPlan(startDate, endDate);
+  try {
+    // const payload = formatItineraryPayload(days, trip, user);
+    const response = await axiosInstance.post('/ai-itiernary/generate', tripData);
+    console.log('response::::', response);
+    return response.data;
+  } catch (error) {
+    console.error('Error saving itinerary:', error);
+    throw error;
+  }
+}
