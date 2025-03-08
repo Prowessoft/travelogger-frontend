@@ -188,7 +188,7 @@ export default function CreateTripPage() {
   });
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState('');
-  const { saveItinerary } = useItineraryStore();
+  const { setItinerary } = useItineraryStore();
 
   useEffect(() => {
     const urlDestination = searchParams.get('destination');
@@ -281,22 +281,17 @@ export default function CreateTripPage() {
         const enrichedPlan = await getAIitineraryData(tripData);
         console.log('After photo enrichment:', enrichedPlan);
         
-        setTrip(tripData);
+        setTrip(enrichedPlan.tripDetails);
 
-        saveItinerary(enrichedPlan);
+        setItinerary(enrichedPlan);
         // toast.dismiss();
         // toast.success("Trip plan generated successfully!");
         setIsGenerating(false);
-        navigate('/itinerary');
-
-        
-        // navigate('/GeneratedItinerary', { 
-        //   state: { 
-        //     tripData: formData,
-        //     aiGeneratedPlan: enrichedPlan
-        //   },
-        //   replace: true
-        // });
+        navigate('/itinerary', { 
+            state: { 
+              navigatedFrom: 'ai'
+            }, 
+          });
       } catch (error) {
         console.error('Generation Error:', error);
         toast.dismiss();

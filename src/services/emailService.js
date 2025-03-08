@@ -1,18 +1,21 @@
 import axiosInstance from '../utils/axiosConfig';
 
 const generatePayload = (days, trip, user) => {
+  const types = ['activities', 'hotels', 'restaurants'];
     return {
-      destination: trip.destination.label,
-      startDate: trip.startDate.toISOString().includes('T') ? trip.startDate.toISOString().split('T')[0] : trip.startDate.toISOString(),
-      endDate: trip.endDate.toISOString().includes('T') ? trip.endDate.toISOString().split('T')[0] : trip.endDate.toISOString(),
+      destination: trip.destination.name,
+      startDate: trip.startDate.includes('T') ? trip.startDate.toISOString().split('T')[0] : trip.startDate,
+      endDate: trip.endDate.includes('T') ? trip.endDate.toISOString().split('T')[0] : trip.endDate,
       recipientEmail: user.email,
       dayPlans: days.map(day => ({
         date: day.date,
-        locations: day.activities.map(activity => ({
-          name: activity.title,
-          category: activity.type,
-          address: activity.location.name || activity.location,
-        }))
+        locations: types.flatMap(type => 
+          day.sections[type].map(res => ({
+              name: res.location.name,
+              address: res.location.address,
+              category: res.type
+          }))
+      ) 
       }))
     };
   };
