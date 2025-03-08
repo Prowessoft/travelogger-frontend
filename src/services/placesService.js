@@ -61,10 +61,12 @@ const getPlacePhoto = async (placeName, type, location) => {
     const place = await searchPlace(placeName, location);
     
     if (place?.photos?.[0]) {
-      return place.photos[0].getUrl({
-        maxWidth: 1000,
-        maxHeight: 1000
-      });
+
+      return place.photos;
+      // return place.photos[0].getUrl({
+      //   maxWidth: 1000,
+      //   maxHeight: 1000
+      // });
     }
     
     // If no photos available, use fallback
@@ -76,58 +78,70 @@ const getPlacePhoto = async (placeName, type, location) => {
 };
 
 export const enrichItineraryWithPhotos = async (tripPlan) => {
-  if (!tripPlan?.tripDetails?.location) {
+  if (!tripPlan?.tripDetails?.destination) {
     console.error('Invalid trip plan or missing location');
     return tripPlan;
   }
 
   const enrichedPlan = { ...tripPlan };
-  const { location } = tripPlan.tripDetails;
+  const { name } = tripPlan.tripDetails?.destination;
 
   try {
     // Enrich hotels
-    if (Array.isArray(enrichedPlan.hotels)) {
-      enrichedPlan.hotels = await Promise.all(
-        enrichedPlan.hotels.map(async (hotel) => ({
-          ...hotel,
-          imageUrl: await getPlacePhoto(hotel.name, 'hotel', location)
-        }))
-      );
-    }
+    // if (Array.isArray(enrichedPlan.hotels)) {
+    //   enrichedPlan.hotels = await Promise.all(
+    //     enrichedPlan.hotels.map(async (hotel) => ({
+    //       ...hotel,
+    //       imageUrl: await getPlacePhoto(hotel.name, 'hotel', name)
+    //     }))
+    //   );
+    // }
 
     // Ensure dailyItinerary is an array
-    enrichedPlan.dailyItinerary = Array.isArray(enrichedPlan.dailyItinerary)
-      ? enrichedPlan.dailyItinerary
-      : Object.values(enrichedPlan.dailyItinerary);
+    enrichedPlan.days = Array.isArray(enrichedPlan.days)
+      ? enrichedPlan.days
+      : Object.values(enrichedPlan.days);
 
     // Enrich daily itinerary
-    enrichedPlan.dailyItinerary = await Promise.all(
-      enrichedPlan.dailyItinerary.map(async (day) => {
+    enrichedPlan.days = await Promise.all(
+      enrichedPlan.days.map(async (day) => {
         // Enrich activities
-        const activities = Array.isArray(day.activities)
+        const activities = Array.isArray(day.sections.activities)
           ? await Promise.all(
-              day.activities.map(async (activity) => ({
+              day.sections.activities.map(async (activity) => ({
                 ...activity,
-                imageUrl: await getPlacePhoto(activity.name, 'activity', location)
+                photos: await getPlacePhoto(activity.name, 'activity', name)
+              }))
+            )
+          : [];
+         // Enrich hotels
+          const hotels = Array.isArray(day.sections.hotels)
+          ? await Promise.all(
+              day.sections.hotels.map(async (hotel) => ({
+                ...hotel,
+                photos: await getPlacePhoto(hotel.name, 'hotel', name)
               }))
             )
           : [];
 
         // Enrich restaurants
-        const restaurants = Array.isArray(day.restaurants)
+        const restaurants = Array.isArray(day.sections.restaurants)
           ? await Promise.all(
-              day.restaurants.map(async (restaurant) => ({
+              day.sections.restaurants.map(async (restaurant) => ({
                 ...restaurant,
-                imageUrl: await getPlacePhoto(restaurant.name, 'restaurant', location)
+                photos: await getPlacePhoto(restaurant.name, 'restaurant', name)
               }))
             )
           : [];
+        
 
-        return {
-          ...day,
+        day.sections = {
+          ...day.sections,
           activities,
+          hotels,
           restaurants
         };
+        return day;
       })
     );
 

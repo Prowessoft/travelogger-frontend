@@ -60,7 +60,11 @@ export function Header() {
                     {/* Profile */}
                   </Link>
                   <button
-                    onClick={() => signOut()}
+                    onClick={() => {
+                      signOut();
+                      navigate('/');
+                    }
+                    }
                     className="text-gray-600 hover:text-gray-900 font-medium"
                   >
                     Sign Out
@@ -123,6 +127,7 @@ export function Header() {
                 <button
                   onClick={() => {
                     signOut();
+                    navigate('/');
                     setMobileMenuOpen(false);
                   }}
                   className="text-gray-600 hover:text-gray-900 font-medium py-2 text-left"
