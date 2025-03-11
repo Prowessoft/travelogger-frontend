@@ -34,7 +34,7 @@ export default function PlanTripPage() {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [interests, setInterests] = useState([]);
-  const [budget, setBudget] = useState('medium');
+  const [budget, setBudget] = useState({});
   const [error, setError] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
 
@@ -60,17 +60,22 @@ export default function PlanTripPage() {
       await new Promise(resolve => setTimeout(resolve, 2000));
       setIsGenerating(false);
     }
-
+    const formattedStartDate = start.toISOString().split('T')[0];
+    const formattedEndDate = end.toISOString().split('T')[0];
     setTrip({
       destination,
-      startDate,
-      endDate,
+      startDate: formattedStartDate,
+      endDate: formattedEndDate,
       interests,
-      budget,
+      budget: {},
       isAIGenerated: isAIMode
     });
 
-    navigate('/itinerary');
+    navigate('/itinerary', { 
+      state: { 
+        navigatedFrom: 'manual'
+      }, 
+    });
   };
 
   const selectDestination = (dest) => {
@@ -205,7 +210,7 @@ export default function PlanTripPage() {
                       label="Start Date"
                       selectedDate={startDate}
                       setSelectedDate={setStartDate}
-                      minDate={new Date()}
+                      minDate={new Date().toISOString().split('T')[0]}
                     />
                   </div>
 
@@ -215,7 +220,7 @@ export default function PlanTripPage() {
                       label="End Date"
                       selectedDate={endDate}
                       setSelectedDate={setEndDate}
-                      minDate={startDate || new Date()}
+                      minDate={startDate || new Date().toISOString().split('T')[0]}
                     />
                   </div>
                 </div>
@@ -268,7 +273,7 @@ export default function PlanTripPage() {
                         <button
                           key={b}
                           type="button"
-                          onClick={() => setBudget(b)}
+                          onClick={() => setBudget({})}
                           className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium capitalize transition-colors ${
                             budget === b
                               ? "bg-primary-600 text-white"

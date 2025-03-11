@@ -117,6 +117,7 @@ const authService = {
   signOut() {
     try {
       localStorage.removeItem('user');
+      sessionStorage.clear();
     } catch (error) {
       console.error('SignOut Error:', error);
     }

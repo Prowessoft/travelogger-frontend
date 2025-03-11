@@ -78,6 +78,8 @@ export default function ItineraryPage() {
     reorderActivities,
     setSelectedDay,
     initializeDays,
+    getItinerary,
+    setItinerary
   } = useItineraryStore();
   const { user } = useAuthStore();
   const [expandedDay, setExpandedDay] = useState(0);
@@ -92,7 +94,8 @@ export default function ItineraryPage() {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const markersRef = useRef([]);
-  const [isLargeScreen, setIsLargeScreen] = useState(false);
+  const [isLargeScreen, setIsLargeScreen] = useState(true);
+  const navigatedFrom = location.state?.navigatedFrom;
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -101,21 +104,6 @@ export default function ItineraryPage() {
     })
   );
 
-  const calculateDayBudget = (activities) => {
-    return activities.reduce((total, activity) => {
-      if (!activity.price) return total;
-
-      // Extract numeric value from price string
-      const price = activity.price.replace(/[^0-9.]/g, "");
-      return total + (parseFloat(price) || 0);
-    }, 0);
-  };
-
-  const calculateTotalBudget = () => {
-    return days.reduce((total, day) => {
-      return total + calculateDayBudget(day.activities);
-    }, 0);
-  };
 
   useEffect(() => {
     // Function to check screen size dynamically
@@ -126,15 +114,28 @@ export default function ItineraryPage() {
     // Run check once on mount
     checkScreenSize();
 
+
     // Listen for screen resize
     window.addEventListener("resize", checkScreenSize);
 
     return () => window.removeEventListener("resize", checkScreenSize);
   }, []);
 
+
   useEffect(() => {
-    if (!trip || itineraryId) {
-      // navigate('/plan-trip');
+    return () => {
+      if(navigatedFrom !== 'ai') {
+        sessionStorage.removeItem("currentTrip"); // Clears only "trip" on route change
+        setItinerary({});
+        console.log("Trip field cleared on route change");
+      }
+    };
+}, [location]);
+
+  useEffect(() => {
+    const itiData = getItinerary();
+    const itineraryDataLen = Object.keys(itiData ?? {}).length;
+    if (!trip || itineraryId || itineraryDataLen > 0) {
       console.log("inside:::");
       return;
     }
@@ -143,64 +144,64 @@ export default function ItineraryPage() {
     const start = new Date(trip.startDate);
     const end = new Date(trip.endDate);
     const dayCount = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
+    const intialItinerary = {
+        id: "",
+        userId: user.id,
+        title: trip.destination.label,
+        tripImg: "",
+        status: "draft",
+        visibility: "private",
+        tripDetails: trip,
+        days: [],
+        sharedWith: [],
+        metadata: { tags: null, isTemplate: false, language: "en", version: 1 },
+    };
 
     const initialDays = Array.from({ length: dayCount }, (_, index) => {
       const date = new Date(start);
       date.setDate(date.getDate() + index);
       return {
-        date: date.toISOString(),
-        activities: [],
+        date: date.toISOString().split('T')[0],
+        budget: {
+          planned: 0,
+          actual: 0
+        },
+        sections: {
+          activities: [],
+          restaurants: [],
+          hotels: []
+        }
       };
     });
-
+    setItinerary({...intialItinerary, days: initialDays})
     initializeDays(initialDays);
     setLoading(false);
 
   }, [trip, navigate, initializeDays, itineraryId]);
 
+
+
   useEffect(() => {
     const loadSavedItinerary = async () => {
-      if (!itineraryId) {
+      const itiData = getItinerary();
+      const itineraryDataLen = Object.keys(itiData ?? {}).length;
+      
+      if (!itineraryId && itineraryDataLen === 0) { 
         return;
       }
-
+  
       try {
         setLoading(true);
-        const savedItinerary = await itineraryService.getItinerary(itineraryId);
-
-        // Set trip data
-        setTrip({
-          destination: savedItinerary.tripDetails.destination.name,
-          tripImg: getDestinationImage(savedItinerary.tripDetails.destination),
-          startDate: savedItinerary.tripDetails.startDate,
-          endDate: savedItinerary.tripDetails.endDate,
-          id: savedItinerary.id,
-        });
-
-        // Transform days data
-        const transformedDays = savedItinerary.days.map((day) => {
-          const activities = [
-            ...(day.sections.hotels?.map((hotel) => ({
-              ...hotel,
-              type: "hotel",
-            })) || []),
-            ...(day.sections.activities?.map((activity) => ({
-              ...activity,
-              type: "activity",
-            })) || []),
-            ...(day.sections.restaurants?.map((restaurant) => ({
-              ...restaurant,
-              type: "restaurant",
-            })) || []),
-          ];
-
-          return {
-            date: day.date,
-            activities,
-          };
-        });
-        // setDaysData(transformedDays);
-        initializeDays(transformedDays);
+        let savedItinerary = itiData; // Default to existing data
+  
+        if (itineraryId && !savedItinerary.id) { 
+          // Only fetch if we don't already have it
+          savedItinerary = await itineraryService.getItinerary(itineraryId);
+          setTrip(savedItinerary.tripDetails);
+          setItinerary(savedItinerary); 
+        }
+  
+        initializeDays(savedItinerary.days);
         setLoading(false);
       } catch (error) {
         console.error("Failed to load itinerary:", error);
@@ -208,9 +209,8 @@ export default function ItineraryPage() {
         navigate("/plan-trip");
       }
     };
-
+  
     loadSavedItinerary();
-    // }, [itineraryId, trip, setTrip, initializeDays, navigate]);
   }, [itineraryId, initializeDays, navigate]);
 
   useEffect(() => {
@@ -219,19 +219,18 @@ export default function ItineraryPage() {
     }
     const setupMap = async () => {
       try {
-        if (!trip) {
+        if (!trip) { 
           // navigate('/plan-trip');
           return;
         }
 
         const loader = getMapsLoader();
         await loader.load();
+        console.log("Maps loaded successfully");
 
         const geocoder = new google.maps.Geocoder();
-        const destination =
-          typeof trip.destination === "object"
-            ? trip.destination.label
-            : trip.destination;
+        const destination = trip.destination ? trip.destination.label || trip.destination?.name : trip.location;
+
 
         geocoder.geocode({ address: destination }, (results, status) => {
           if (status === "OK" && results[0]) {
@@ -283,27 +282,18 @@ export default function ItineraryPage() {
             };
 
             days.forEach((day) => {
-              day.hotels?.forEach((hotel) => {
-                addMarker(hotel.address, hotel.name, "blue");
+              day.sections.hotels?.forEach((hotel) => {
+                addMarker(hotel.location.address, hotel.location.name, "blue");
               });
-
-              day.activities?.forEach((activity) => {
-                if (activity.location?.name) {
-                  addMarker(activity.location.name, activity.name, "red");
-                }
+              day.sections.activities?.forEach((activity) => {
+                  addMarker(activity.location.address, activity.location.name, "red");
               });
-
-              day.restaurants?.forEach((restaurant) => {
-                if (restaurant.address) {
-                  addMarker(restaurant.address, restaurant.name, "yellow");
-                }
+              day.sections.restaurants?.forEach((restaurant) => {
+                  addMarker(restaurant.location.address, restaurant.location.name, "yellow");
               });
             });
           }
         });
-
-        // Add activities and restaurants
-        // plan.dailyItinerary?.forEach(day => {
 
         setLoading(false);
       } catch (error) {
@@ -364,29 +354,43 @@ export default function ItineraryPage() {
 
     const newItem = {
       id: Math.random().toString(36).substr(2, 9),
+      type: place.type,
       title: place.title,
       description: place.description,
-      location: place.location,
-      type,
-      rating: place.rating,
-      user_ratings_total: place.user_ratings_total,
+      location: {
+        name: place.title,
+        address: place.location.name,
+        coordinates: place.location.coordinates,
+      },
+      startTime: null,
+      endTime: null,
+      duration: null,
+      price: null,
       priceLevel: place.priceLevel,
-      website: place.website,
-      formatted_phone_number: place.formatted_phone_number,
-      url: place.url,
-      formattedHours: place.formattedHours,
-      isOpen: place.isOpen,
-      photos: place.photos,
+      rating: place.rating,
+      userRatingsTotal: place.user_ratings_total,
+      photos: [ {
+        url: place.photos[2].url,
+        ccaption: null
+      }
+      ],
+      contact: {
+        googleMapsUrl: place.url,
+        website: place.website,
+        phone: place.formatted_phone_number
+      },
+      operatingHours: {
+        isOpen: place.isOpen,
+        periods: []
+      },
+      bookingInfo: null,
+      cuisine: null
     };
 
-    addActivity(selectedDay, newItem);
-    // daysData.map((day, index) => {
-    //   if (index === selectedDay) {
-    //     day.activities.push(newItem);
-    //   }
-    // });
-    // setDaysData(daysData);
-    // setIsPlaceSearchOpen(false);
+    // const updatedItinerary = addActivity(selectedDay, newItem, type);
+    const updatedItinerary = addActToItinerary(getItinerary(), selectedDay, newItem, type);
+    setItinerary(updatedItinerary)
+    initializeDays(updatedItinerary.days);
     setIsPlaceSearchOpen(false);
 
     // Add marker to the map
@@ -410,6 +414,26 @@ export default function ItineraryPage() {
       mapInstanceRef.current.panTo({ lat, lng });
     }
   };
+
+  const addActToItinerary = (itinerary, dayIndex, activity, sectionType) => {
+      const updatedDays = itinerary.days.map((day, idx) =>
+        idx === dayIndex
+          ? {
+              ...day,
+              sections: {
+                ...day.sections,
+                [sectionType]: [...(day.sections[sectionType] || []), activity], // Append activity
+              },
+            }
+          : day
+      );
+
+      return {
+          ...itinerary,
+          days: updatedDays, // Ensure days inside itinerary are updated
+      };
+    // })
+  }
 
   const handleDragEnd = (event) => {
     const { active, over } = event;
@@ -444,14 +468,15 @@ export default function ItineraryPage() {
         trip,
         user,
       });
-      // attach trip image to trip
-      trip.tripImg = getDestinationImage(trip.destination);
+      // // attach trip image to trip
+      getItinerary().tripImg = getDestinationImage(trip.destination.name);
       if (itineraryId) {
         // await itineraryService.updateItinerary(itineraryId, daysData, trip, user);
-        await itineraryService.updateItinerary(itineraryId, days, trip, user);
+        await itineraryService.updateItinerary(itineraryId, getItinerary());
         // return;
       } else {
-        await itineraryService.saveItinerary(days, trip, user);
+        // const updatedItinerary = {...itineraryData, generatedBy: 'ai'}
+        await itineraryService.saveItinerary({...getItinerary(), userId:user.id});
         // return;
       }
       toast.dismiss();
@@ -470,20 +495,20 @@ export default function ItineraryPage() {
   };
 
   const renderSection = (day, dayIndex, type) => {
-    const items = day.activities.filter((activity) => activity.type === type);
+    const items = day.sections[type];
     const icon =
-      type === "hotel" ? (
+      type === "hotels" ? (
         <Hotel className="w-5 h-5 text-primary-600" />
-      ) : type === "restaurant" ? (
+      ) : type === "restaurants" ? (
         <Utensils className="w-5 h-5 text-primary-600" />
       ) : (
         <Coffee className="w-5 h-5 text-primary-600" />
       );
 
     const title =
-      type === "hotel"
+      type === "hotels"
         ? "Hotels"
-        : type === "restaurant"
+        : type === "restaurants"
         ? "Restaurants"
         : "Activities";
 
@@ -496,15 +521,15 @@ export default function ItineraryPage() {
           <h4 className="text-lg font-semibold text-gray-900">{title}</h4>
         </div>
         <SortableContext
-          items={items.map((item) => item.id)}
+          items={items.map((item, index) => item.id || index)}
           strategy={verticalListSortingStrategy}
         >
           <div className="space-y-4">
             {items.map((item, itemIndex) => (
               <SortableActivityItem
-                key={item.id}
+                key={itemIndex}
                 activity={item}
-                onRemove={() => removeActivity(dayIndex, item.id)}
+                onRemove={() => removeActivity(dayIndex, itemIndex, item.type)}
                 number={itemIndex + 1}
                 nextActivity={items[itemIndex + 1]}
               />
@@ -555,13 +580,14 @@ export default function ItineraryPage() {
               alt={trip?.destination || "Destination"}
               className="w-full h-full object-cover"
             />
+
             <div className="absolute inset-0 bg-black/50" />
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="text-center">
                 <h1 className="text-4xl font-bold text-white mb-4">
                   {trip
                     ? `Plan Your ${
-                        trip.destination?.label || trip.destination
+                        trip.destination?.label || trip.location || trip.destination?.name
                       } Trip`
                     : "Plan Your Trip"}
                 </h1>
@@ -623,8 +649,11 @@ export default function ItineraryPage() {
                       <div className="text-sm font-medium text-gray-900">
                         Total Budget
                       </div>
-                      <div className="text-lg font-bold text-primary-600">
-                        ${calculateTotalBudget().toFixed(2)}
+                      <div className="flex font-bold text-primary-600">
+                        <DollarSign className="w-4" />
+
+                        {/* ${calculateTotalBudget().toFixed(2)} */}
+                        {trip?.budget?.total}
                       </div>
                     </div>
                   </div>
@@ -663,15 +692,16 @@ export default function ItineraryPage() {
                         </h3>
                         <div className="flex items-center gap-4 text-sm text-gray-500">
                           <span>
-                            {day.activities.length}{" "}
-                            {day.activities.length === 1 ? "item" : "items"}
+                            {day.sections.hotels.length + day.sections.restaurants.length + day.sections.activities.length}{"  "}
+                            {day.sections.hotels.length + day.sections.restaurants.length + day.sections.activities.length === 1 ? "item" : "items"}
                           </span>
-                          <div className="flex items-center gap-1 text-primary-600">
+                          { day.budget?.planned  && <div className="flex items-center gap-1 text-primary-600">
                             <DollarSign className="w-4 h-4" />
                             <span>
-                              ${calculateDayBudget(day.activities).toFixed(2)}
+                              {day.budget?.planned || ''}
+                              {/* ${calculateDayBudget(day.activities).toFixed(2)} */}
                             </span>
-                          </div>
+                          </div> }
                         </div>
                       </div>
                       {expandedDay === index ? (
@@ -685,23 +715,26 @@ export default function ItineraryPage() {
                       <div className="p-4 border-t border-gray-100">
                         {/* Daily Budget Summary */}
                         <div className="mb-6 bg-gray-50 rounded-lg p-4">
-                          <div className="flex items-center justify-between mb-2">
+                          { day.budget?.planned  && <div className="flex items-center justify-between mb-2">
                             <h4 className="font-medium text-gray-900">
                               Daily Budget
                             </h4>
-                            <div className="text-lg font-bold text-primary-600">
-                              ${calculateDayBudget(day.activities).toFixed(2)}
+                            <div className="flex font-bold text-primary-600">
+                              <DollarSign className="w-4" />
+
+                              {/* ${calculateDayBudget(day.activities).toFixed(2)} */}
+                              {day.budget?.planned || ''}
                             </div>
-                          </div>
+                          </div>}
                           <div className="text-sm text-gray-600">
                             Includes all activities, restaurants, and
                             accommodations for the day
                           </div>
                         </div>
 
-                        {renderSection(day, index, "hotel")}
-                        {renderSection(day, index, "activity")}
-                        {renderSection(day, index, "restaurant")}
+                        {renderSection(day, index, "hotels")}
+                        {renderSection(day, index, "activities")}
+                        {renderSection(day, index, "restaurants")}
                       </div>
                     )}
                   </div>
