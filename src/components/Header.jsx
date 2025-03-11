@@ -8,7 +8,7 @@ export function Header() {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState("signin");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { isAuthenticated, signOut, user } = useAuthStore();
+  const { isAuthenticated, signOut, deleteAccount, user } = useAuthStore();
   const navigate = useNavigate();
 
   const handleAuthClick = (mode) => {
@@ -65,6 +65,18 @@ export function Header() {
                   >
                     Sign Out
                   </button>
+
+                  <button
+                    onClick={() => {
+                      deleteAccount(user.id);
+                      navigate('/');
+                    }
+                    }
+                    className="text-gray-600 hover:text-gray-900 font-medium"
+                  >
+                    Delete Profile
+                  </button>
+
                 </>
               ) : (
                 <>

@@ -23,7 +23,8 @@ import {
   Bookmark,
   Clock,
   DollarSign,
-  ArrowRight
+  ArrowRight,
+  Trash2
   } from "lucide-react";
 
 // Dummy data for demonstration
@@ -215,6 +216,21 @@ async function fetchData() {
 
   };
 
+  const onRemoveItinerary = async (itineraryId) => {
+    try {
+      const removeRes = await itineraryService.removeItinerary(itineraryId);
+      if (removeRes) {
+        const updatedItineraries = userItineraryData.filter((itinerary) => itinerary.id !== itineraryId);
+        setUserItineraryData(updatedItineraries);
+      } else {
+        toast.error('Failed to remove itinerary');
+      }
+    } catch (error) {
+      console.error('Failed to fetch itineraries:', error);
+      toast.error('Failed to load itineraries');
+    }
+  }
+
   const renderTabContent = () => {
     const existingUserItinerary = userItineraryData ? userItineraryData :  dummyItineraries;
     const calculateDays = (startDate, endDate) => {
@@ -239,7 +255,7 @@ async function fetchData() {
               <div className="col-span-2 text-center py-8">
                 <p className="text-gray-600 mb-4">No itineraries found</p>
                 <button
-                  onClick={() => navigate('/plan-trip')}
+                  onClick={() => navigate("/plan-trip")}
                   className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
                 >
                   Create New Trip
@@ -247,30 +263,48 @@ async function fetchData() {
                 </button>
               </div>
             ) : (
-              existingUserItinerary?.length > 0 && existingUserItinerary?.map((itinerary) => (
-                <div 
+              existingUserItinerary?.length > 0 &&
+              existingUserItinerary?.map((itinerary) => (
+                <div
                   key={itinerary.id}
                   className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
                   onClick={() => handleEditItinerary(itinerary.id)}
                 >
                   <div className="relative h-48">
-                  <img
-                    src={itinerary.image || dummyItineraries[0].image}
-                    alt={itinerary.title}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
+                    <img
+                      src={itinerary.image || dummyItineraries[0].image}
+                      alt={itinerary.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
                   <div className="p-4">
-                    <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
-                      <MapPin className="w-4 h-4" />
-                      {itinerary.destinationName}
+                    <div className="flex items-center gap-2 text-sm text-gray-600 mb-2 justify-between ">
+                      <div className="flex items-center gap-1">
+                        <MapPin className="w-4 h-4" />
+                        {itinerary.destinationName}
+                      </div>
+                      <div className="flex items-center">
+                      <button
+                        onClick={() => onRemoveItinerary(itinerary.id)}
+                        className="p-1.5 rounded-full hover:bg-gray-200"
+                        // aria-label={`Remove ${activity.title}`}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                      </div>
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{itinerary.title}</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                      {itinerary.title}
+                    </h3>
                     <div className="flex items-center justify-between text-sm text-gray-600">
                       <div className="flex items-center gap-4">
                         <div className="flex items-center gap-1">
                           <Clock className="w-4 h-4" />
-                          {new Date(itinerary.startDate).toLocaleDateString()} - {new Date(itinerary.endDate).toLocaleDateString()} days
+                          {new Date(
+                            itinerary.startDate
+                          ).toLocaleDateString()} -{" "}
+                          {new Date(itinerary.endDate).toLocaleDateString()}{" "}
+                          days
                         </div>
                       </div>
                       <div className="flex items-center gap-1">

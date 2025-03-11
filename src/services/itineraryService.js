@@ -180,8 +180,17 @@ const itineraryService = {
 
   async updateItinerary(itineraryId, days, trip, user) {
     try {
-      const payload = formatItineraryPayload(days, trip, user);
-      const response = await axiosInstance.post(`/itinerary/update/${itineraryId}`, payload);
+      const response = await axiosInstance.post(`/itinerary/update/${itineraryId}`, {itinerary: payload});
+      return response.data;
+    } catch (error) {
+      console.error('Error saving itinerary:', error);
+      throw error;
+    }
+  },
+
+  async removeItinerary(itineraryId) {
+    try {
+      const response = await axiosInstance.delete(`/itineraries/${itineraryId}`);
       return response.data;
     } catch (error) {
       console.error('Error saving itinerary:', error);

@@ -48,6 +48,15 @@ const createAuthStore = (set) => ({
       throw error;
     }
   },
+  updatePassword: async (email, password, newPassword) => {
+    try{
+    const response = await authService.updatePassword(email, password, newPassword);
+
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  },
 
   signOut: () => {
     authService.signOut();
@@ -57,6 +66,15 @@ const createAuthStore = (set) => ({
       error: null,
       loading: false
     });
+  },
+
+  deleteAccount: async (userId) => {
+    try {
+      await authService.deleteAccount(userId);
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   },
 
   clearError: () => set({ error: null })

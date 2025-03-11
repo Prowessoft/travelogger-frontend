@@ -85,11 +85,62 @@ const authService = {
     }
   },
 
+  async updatePassword(email, newPassword, confirmPassword) {
+    try {
+      const response = await axiosInstance.post('/password/update', {
+        email,
+        newPassword,
+        confirmPassword,
+      });
+
+      if (!response.data) {
+        throw new Error('No response data received');
+      }
+
+      return response.data.message; // Return success message
+    } catch (error) {
+      console.error('Update Password Error:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+      });
+
+      if (error.response?.data?.message) {
+        throw new Error(error.response.data.message);
+      } else if (!error.response) {
+        throw new Error('Network error. Please check your connection.');
+      } else {
+        throw new Error('Failed to update password. Please try again.');
+      }
+    }
+  },
   signOut() {
     try {
       localStorage.removeItem('user');
     } catch (error) {
       console.error('SignOut Error:', error);
+    }
+  },
+
+  deleteAccount(userId) {
+    try {
+      const response = axiosInstance.delete(`/user/hard/delete/${userId}`);
+      if (!response.data) {
+        throw new Error('No response data received');
+      }
+      localStorage.removeItem('user');
+      sessionStorage.clear();
+      return response.data.message; // Return success message
+    } catch (error) {
+      console.error('Delete Account Error:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+      });
+
+      if (error.response?.data?.message) {
+        throw new Error(error.response.data.message); // Throw error with message from server
+      }
     }
   },
 

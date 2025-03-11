@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { useAuthStore } from "../../store/authStore";
 import GoogleLoginButton from "../GoogleLoginButton";
+import ForgotPasswordModal from "./ForgotPasswordModal";
 
 const avatars = [
   "https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=Felix&backgroundColor=b6e3f4",
@@ -25,9 +26,11 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }) {
   const [mode, setMode] = useState(initialMode);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errors, setErrors] = useState({});
   const [name, setName] = useState("");
   const [selectedAvatar, setSelectedAvatar] = useState(defaultAvatar);
   const [serverError, setServerError] = useState(false);
+  const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false); // New State
   const { signIn, signUp, loading, error, clearError } = useAuthStore();
 
   useEffect(() => {
@@ -36,6 +39,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }) {
     setEmail("");
     setPassword("");
     setName("");
+    setErrors({})
     setSelectedAvatar(defaultAvatar);
     setServerError(false);
   }, [isOpen, clearError]);
@@ -72,6 +76,43 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }) {
       console.log("Authentication failed:", error.message);
     }
   };
+
+  const validateEmail = (email) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && email.length <= 254;
+  };
+
+  const validatePassword = (password) => {
+    return /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,64}$/.test(password);
+  };
+
+  const validateName = (username) => {
+    return /^[a-zA-Z0-9_]{3,20}$/.test(username);
+  };
+
+
+  const handleEmailChange = (e) => {
+    const newEmail = e.target.value;
+    setEmail(newEmail);
+    setErrors((prev) => ({ ...prev, email: validateEmail(newEmail) ? "" : "Invalid email format or too long" }));
+  };
+
+  const handlePasswordChange = (e) => {
+    const newPassword = e.target.value;
+    setPassword(newPassword);
+    setErrors((prev) => ({ ...prev, password: validatePassword(newPassword) ? "" : "Password must be 8-64 characters, include an uppercase letter, a number, and a special character" }));
+  };
+
+
+  const handleNameChange = (e) => {
+    const newname = e.target.value;
+    setName(newname);
+    setErrors((prev) => ({ ...prev, username: validateName(newname) ? "" : "Username must be 3-20 characters and contain only letters, numbers, or underscores" }));
+  };
+
+    // Handle Password Reset
+    const handleResetPassword = (email) => {
+      console.log(`Reset password request sent for: ${email}`);
+    };
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -153,12 +194,13 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }) {
                     <input
                       type="text"
                       value={name}
-                      onChange={(e) => setName(e.target.value)}
+                      onChange={handleNameChange}
                       className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                       placeholder="Enter your name"
                       required
                     />
                   </div>
+                  {errors.username && <p className="text-red-500 text-sm mt-1">{errors.username}</p>}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">
@@ -169,13 +211,14 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }) {
                     <input
                       type="email"
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      onChange={handleEmailChange}
                       className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                       placeholder="Enter your email"
                       autoComplete={mode === "signin" ? "on" : "new-email"}
                       required
                     />
                   </div>
+                  {errors.email && <p className="text-red-500 text-sm mt-2">{errors.email}</p>}
                 </div>
 
                 <div>
@@ -187,7 +230,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }) {
                     <input
                       type="password"
                       value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      onChange={handlePasswordChange}
                       className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                       placeholder={
                         mode === "signin"
@@ -198,6 +241,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }) {
                       required
                     />
                   </div>
+                  {errors.password && <p className="text-red-500 text-sm mt-2">{errors.password}</p>}
                 </div>
               </>
             )}
@@ -245,6 +289,22 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }) {
               </>
             )}
 
+            {/* Forgot Password Button */}
+            {mode === "signin" && (
+              <div className="text-right margin-top-10">
+                <button
+                  type="button"
+                  className="text-sm text-primary-600 hover:text-primary-700"
+                  onClick={() => {
+                    setIsForgotPasswordOpen(true);
+                    // onClose(); // Close the Auth modal when the button is clicked
+                  }}
+                >
+                  Forgot password?
+                </button>
+              </div>
+            )}
+
             {mode === "signup" && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-3">
@@ -289,7 +349,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }) {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-primary-600 text-white py-3 rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2 text-sm font-medium"
+              className="w-full bg-primary-600 text-white py-3 rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2 text-sm font-medium margin-top-20"
             >
               {loading ? (
                 <>
@@ -328,6 +388,12 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }) {
                 </div>
               </div>
             </div>
+
+            {/* Forgot Password Modal */}
+            <ForgotPasswordModal
+              isForgotPassModalOpen={isForgotPasswordOpen}
+              onClose={() => setIsForgotPasswordOpen(false)}
+            />
           </form>
         </div>
       </div>
