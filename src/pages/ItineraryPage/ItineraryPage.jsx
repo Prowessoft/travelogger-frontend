@@ -146,7 +146,7 @@ export default function ItineraryPage() {
     const dayCount = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
     const intialItinerary = {
         id: "",
-        userId: user.id,
+        userId: user?.id,
         title: trip.destination.label,
         tripImg: "",
         status: "draft",
