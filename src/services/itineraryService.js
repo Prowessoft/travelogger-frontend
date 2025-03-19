@@ -182,7 +182,7 @@ const itineraryService = {
 
   async updateItinerary(itineraryId, payload) {
     try {
-      const response = await axiosInstance.post(`/itinerary/update/${itineraryId}`, payload);
+      const response = await axiosInstance.post(`/itinerary/update/${itineraryId}`, {itinerary: payload});
       return response.data;
     } catch (error) {
       console.error('Error saving itinerary:', error);
@@ -193,7 +193,7 @@ const itineraryService = {
   async getItinerary(id) {
     try {
       const response = await axiosInstance.get(`/getItinerary/${id}`);
-      return response.data;
+      return response.data.itinerary;
     } catch (error) {
       console.error('Error fetching itinerary:', error);
       throw error;

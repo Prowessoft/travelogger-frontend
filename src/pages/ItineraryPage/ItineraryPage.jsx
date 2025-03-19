@@ -155,6 +155,7 @@ export default function ItineraryPage() {
         days: [],
         sharedWith: [],
         metadata: { tags: null, isTemplate: false, language: "en", version: 1 },
+        generatedBy: 'manual'
     };
 
     const initialDays = Array.from({ length: dayCount }, (_, index) => {
@@ -162,10 +163,7 @@ export default function ItineraryPage() {
       date.setDate(date.getDate() + index);
       return {
         date: date.toISOString().split('T')[0],
-        budget: {
-          planned: 0,
-          actual: 0
-        },
+        dayNumber: index + 1,
         sections: {
           activities: [],
           restaurants: [],
@@ -303,6 +301,13 @@ export default function ItineraryPage() {
       }
     };
     setupMap();
+    
+    // Cleanup function: Clears markers when component unmounts
+    return () => {
+      markersRef.current.forEach((marker) => marker.setMap(null));
+      markersRef.current = [];
+    };
+    
   }, [trip, navigate, isLargeScreen]);
 
   const handleSearch = () => {
@@ -353,7 +358,7 @@ export default function ItineraryPage() {
     }
 
     const newItem = {
-      id: Math.random().toString(36).substr(2, 9),
+      // id: Math.random().toString(36).substr(2, 9),
       type: place.type,
       title: place.title,
       description: place.description,

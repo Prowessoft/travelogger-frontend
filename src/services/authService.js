@@ -36,7 +36,7 @@ const authService = {
       if (error.response?.data?.message) {
         throw new Error(error.response.data.message);
       } else if (!error.response) {
-        throw new Error('Network error. Please check your connection.');
+        throw new Error(error);
       } else {
         throw new Error('Failed to sign up. Please try again.');
       }
@@ -80,7 +80,7 @@ const authService = {
       } else if (!error.response) {
         throw new Error('Network error. Please check your connection.');
       } else {
-        throw new Error('Failed to sign in. Please try again.');
+        throw new Error(error);
       }
     }
   },
@@ -126,9 +126,9 @@ const authService = {
   deleteAccount(userId) {
     try {
       const response = axiosInstance.delete(`/user/hard/delete/${userId}`);
-      if (!response.data) {
-        throw new Error('No response data received');
-      }
+      // if (!response.data) {
+      //   throw new Error('No response data received');
+      // }
       localStorage.removeItem('user');
       sessionStorage.clear();
       return response.data.message; // Return success message

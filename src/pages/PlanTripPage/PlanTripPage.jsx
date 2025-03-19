@@ -67,7 +67,16 @@ export default function PlanTripPage() {
       startDate: formattedStartDate,
       endDate: formattedEndDate,
       interests,
-      budget: {},
+      budget: {
+        total: 0,
+        currency: 'USD',
+        breakdown: {
+          activities: 0,
+          accommodation: 0,
+          dining: 0,
+          transport: 0,
+        }
+      },
       isAIGenerated: isAIMode
     });
 
@@ -141,21 +150,15 @@ export default function PlanTripPage() {
                   Destination
                 </label>
                 <div className="relative">
-                  {/* <input
-                    type="text"
-                    id="destination"
-                    value={destination}
-                    onChange={(e) => setDestination(e.target.value)}
-                    placeholder="Enter destination"
-                    className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 placeholder:text-gray-400"
-                  /> */}
                   <GooglePlacesAutocomplete
                     apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
                     selectProps={{
                       value: destination,
                       onChange: (v) => {
-                        setDestination(v);
-                        // handleInputChange('location', v);
+                        setDestination({
+                          label: v.label,
+                          coordinates: null
+                        })
                       },
                       placeholder: "Search for a destination...",
                       styles: {

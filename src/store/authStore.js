@@ -71,6 +71,12 @@ const createAuthStore = (set) => ({
   deleteAccount: async (userId) => {
     try {
       await authService.deleteAccount(userId);
+      set({
+        user: null,
+        isAuthenticated: false,
+        error: null,
+        loading: false
+      });
     } catch (error) {
       console.log(error);
       throw error;
