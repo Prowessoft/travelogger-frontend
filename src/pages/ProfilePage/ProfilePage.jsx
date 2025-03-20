@@ -218,7 +218,7 @@ async function fetchData() {
 
   const onRemoveItinerary = async (itineraryId) => {
     try {
-      const removeRes = await itineraryService.removeItinerary(itineraryId);
+      const removeRes = await itineraryService.deleteItinerary(itineraryId);
       if (removeRes) {
         const updatedItineraries = userItineraryData.filter((itinerary) => itinerary.id !== itineraryId);
         setUserItineraryData(updatedItineraries);
@@ -285,7 +285,11 @@ async function fetchData() {
                       </div>
                       <div className="flex items-center">
                       <button
-                        onClick={() => onRemoveItinerary(itinerary.id)}
+                        onClick={(event) =>{
+                          event.stopPropagation();
+                          onRemoveItinerary(itinerary.id);
+                        }
+                          }
                         className="p-1.5 rounded-full hover:bg-gray-200"
                         // aria-label={`Remove ${activity.title}`}
                       >

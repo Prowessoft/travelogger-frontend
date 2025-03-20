@@ -58,7 +58,7 @@ const getDestinationImage = (des) => {
   };
 
   const cityKey = Object.keys(images).find((key) =>
-    des?.label?.split(",")[0].toLowerCase().includes(key)
+    des?.name?.split(",")[0].toLowerCase().includes(key)
   );
 
   return images[cityKey] || images.default;
@@ -147,7 +147,7 @@ export default function ItineraryPage() {
     const intialItinerary = {
         id: "",
         userId: user?.id,
-        title: trip.destination.label,
+        title: trip.destination?.name || trip.destination?.name,
         tripImg: "",
         status: "draft",
         visibility: "private",
@@ -223,6 +223,8 @@ export default function ItineraryPage() {
         }
 
         const loader = getMapsLoader();
+        
+        console.log("Loader initialized, calling load...");
         await loader.load();
         console.log("Maps loaded successfully");
 
@@ -301,12 +303,12 @@ export default function ItineraryPage() {
       }
     };
     setupMap();
-    
+
     // Cleanup function: Clears markers when component unmounts
-    return () => {
-      markersRef.current.forEach((marker) => marker.setMap(null));
-      markersRef.current = [];
-    };
+    // return () => {
+    // markersRef.current.forEach((marker) => marker.setMap(null));
+    // markersRef.current = [];
+    // };
     
   }, [trip, navigate, isLargeScreen]);
 
@@ -391,7 +393,6 @@ export default function ItineraryPage() {
       bookingInfo: null,
       cuisine: null
     };
-
     // const updatedItinerary = addActivity(selectedDay, newItem, type);
     const updatedItinerary = addActToItinerary(getItinerary(), selectedDay, newItem, type);
     setItinerary(updatedItinerary)
@@ -421,10 +422,15 @@ export default function ItineraryPage() {
   };
 
   const addActToItinerary = (itinerary, dayIndex, activity, sectionType) => {
+    const budget =  {
+      planned: 0,
+      actual: 0
+    }
       const updatedDays = itinerary.days.map((day, idx) =>
         idx === dayIndex
           ? {
               ...day,
+              budget,
               sections: {
                 ...day.sections,
                 [sectionType]: [...(day.sections[sectionType] || []), activity], // Append activity
@@ -477,6 +483,7 @@ export default function ItineraryPage() {
       getItinerary().tripImg = getDestinationImage(trip.destination.name);
       if (itineraryId) {
         // await itineraryService.updateItinerary(itineraryId, daysData, trip, user);
+        // const budget = {planned: 0, actual: 0};
         await itineraryService.updateItinerary(itineraryId, getItinerary());
         // return;
       } else {

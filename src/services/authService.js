@@ -87,7 +87,7 @@ const authService = {
 
   async updatePassword(email, newPassword, confirmPassword) {
     try {
-      const response = await axiosInstance.post('/password/update', {
+      const response = await axiosInstance.put('/password/update', {
         email,
         newPassword,
         confirmPassword,
@@ -97,7 +97,9 @@ const authService = {
         throw new Error('No response data received');
       }
 
-      return response.data.message; // Return success message
+      return response;
+
+      // return response.data; // Return success message
     } catch (error) {
       console.error('Update Password Error:', {
         message: error.message,
@@ -114,6 +116,60 @@ const authService = {
       }
     }
   },
+
+  async sendOtp(email) {
+    try {
+      const response = await axiosInstance.post(`email/send-otp?email=${email}`);
+
+      if (!response.data) {
+        throw new Error('No response data received');
+      }
+
+      return response.data; // Return success message
+    } catch (error) {
+      console.error('otp Error:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+      });
+
+      if (error.response?.data?.message) {
+        throw new Error(error.response.data.message);
+      } else if (!error.response) {
+        throw new Error('Network error. Please check your connection.');
+      } else {
+        throw new Error('Failed to update password. Please try again.');
+      }
+    }
+  },
+
+  async verifyOtp(email, otp) {
+    try {
+      const response = await axiosInstance.post(`email/verify-otp?email=${email}&otp=${otp}`);
+
+      if (!response.data) {
+        throw new Error('No response data received');
+      }
+
+      return response.data; // Return success message
+    } catch (error) {
+      console.error('otp Error:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+      });
+
+      if (error.response?.data?.message) {
+        throw new Error(error.response.data.message);
+      } else if (!error.response) {
+        throw new Error('Network error. Please check your connection.');
+      } else {
+        throw new Error('Failed to update password. Please try again.');
+      }
+    }
+  },
+
+
   signOut() {
     try {
       localStorage.removeItem('user');

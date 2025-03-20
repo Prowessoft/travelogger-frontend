@@ -200,6 +200,18 @@ const itineraryService = {
     }
   },
 
+  async deleteItinerary(id) {
+    try {
+      const response = await axiosInstance.delete(`/deleteItinerary/${id}`);
+      return response;
+    } catch (error) {
+      console.error('Error fetching itinerary:', error);
+      throw error;
+    }
+  },
+
+
+
   async getUserItineraries(userId) {
     try {
       // const payload = formatItineraryPayload(days, trip, user);

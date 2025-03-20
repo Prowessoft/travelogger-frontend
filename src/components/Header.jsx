@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Compass, Camera, Menu, X, User } from "lucide-react";
+import { Compass, Camera, Menu, X, ChevronDown, ChevronUp } from "lucide-react";
 import { AuthModal } from "./auth/AuthModal";
 import { useAuthStore } from "../store/authStore";
 
@@ -9,6 +9,7 @@ export function Header() {
   const [authMode, setAuthMode] = useState("signin");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { isAuthenticated, signOut, deleteAccount, user } = useAuthStore();
+  const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleAuthClick = (mode) => {
@@ -44,44 +45,72 @@ export function Header() {
             {/* Desktop Auth Buttons */}
             <div className="hidden md:flex items-center gap-4">
               {isAuthenticated ? (
-                <>
-                  <Link
-                    to="/profile"
-                    className="text-gray-600 hover:text-gray-900 gap-1 flex"
+                <div className="relative">
+                  {/* Profile Button (Avatar + Name + Chevron) */}
+                  <button
+                    className="flex items-center gap-2 focus:outline-none px-3 py-2 rounded-lg"
+                    onMouseEnter={() => setIsOpen(true)} // Open on hover
                   >
-                    {/* <User className="w-5 h-5" /> */}
                     <img
                       src={user.avatarImgUrl}
                       alt="User Avatar"
-                      className="w-8 h-8 rounded-full ml-auto border-2 border-white"
+                      className="w-8 h-8 rounded-full border-2 border-white"
                     />
-
-                    <span className="mt-1 font-medium">{user.name}</span>
-                    {/* Profile */}
-                  </Link>
-                  <button
-                    onClick={() => {
-                      signOut();
-                      navigate('/');
-                    }
-                    }
-                    className="text-gray-600 hover:text-gray-900 font-medium"
-                  >
-                    Sign Out
+                    <span className="font-medium text-gray-700">
+                      {user.name}
+                    </span>
+                    {isOpen ? (
+                      <ChevronUp className="w-5 h-5 text-gray-600" />
+                    ) : (
+                      <ChevronDown className="w-5 h-5 text-gray-600" />
+                    )}
                   </button>
 
-                  <button
-                    onClick={() => {
-                      deleteAccount(user.id);
-                      navigate('/');
-                    }
-                    }
-                    className="text-gray-600 hover:text-gray-900 font-medium"
+                  {/* Dropdown Menu (Keep open until the user moves out of it) */}
+                  <div
+                    className={`absolute right-0 w-48 bg-white border border-gray-200 rounded-lg shadow-lg transition-opacity ${
+                      isOpen ? "opacity-100 visible" : "opacity-0 invisible"
+                    }`}
+                    onMouseEnter={() => setIsOpen(true)} // Keep open when hovered
+                    onMouseLeave={() => setIsOpen(false)} // Close when mouse leaves dropdown
                   >
-                    Delete Profile
-                  </button>
-
-                </>
+                    <ul className="py-2 text-gray-700">
+                      <li>
+                        <Link
+                          to="/profile"
+                          className="flex items-center px-4 py-2 hover:bg-gray-200"
+                          onClick={() => setIsOpen(false)}
+                        >
+                          Profile
+                        </Link>
+                      </li>
+                      <li>
+                        <button
+                          onClick={() => {
+                            signOut();
+                            navigate("/");
+                            setIsOpen(false);
+                          }}
+                          className="flex w-full text-left px-4 py-2 hover:bg-gray-100"
+                        >
+                          Sign Out
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          onClick={() => {
+                            deleteAccount(user.id);
+                            navigate("/");
+                            setIsOpen(false);
+                          }}
+                          className="flex w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600"
+                        >
+                          Delete Profile
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
               ) : (
                 <>
                   <button
@@ -118,14 +147,14 @@ export function Header() {
         {mobileMenuOpen && (
           <div className="md:hidden absolute top-full left-0 right-0 bg-white border-t border-gray-200 py-4 px-4 shadow-lg">
             <nav className="flex flex-col gap-4">
-              <Link
+              {/* <Link
                 to="/experiences"
                 className="flex items-center gap-1 text-gray-600 hover:text-gray-900 py-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <Camera className="w-4 h-4" />
                 Experiences
-              </Link>
+              </Link> */}
               {isAuthenticated && (
                 <Link
                   to="/profile"
@@ -136,16 +165,28 @@ export function Header() {
                 </Link>
               )}
               {isAuthenticated ? (
-                <button
-                  onClick={() => {
-                    signOut();
-                    navigate('/');
-                    setMobileMenuOpen(false);
-                  }}
-                  className="text-gray-600 hover:text-gray-900 font-medium py-2 text-left"
-                >
-                  Sign Out
-                </button>
+                <>
+                  <button
+                    onClick={() => {
+                      signOut();
+                      navigate("/");
+                      setMobileMenuOpen(false);
+                    }}
+                    className="text-gray-600 hover:text-gray-900 font-medium py-2 text-left"
+                  >
+                    Sign Out
+                  </button>
+                  <button
+                    onClick={() => {
+                      deleteAccount(user.id);
+                      navigate("/");
+                      setIsOpen(false);
+                    }}
+                    className="flex w-full text-left py-2 hover:bg-gray-100 text-red-600"
+                  >
+                    Delete Profile
+                  </button>
+                </>
               ) : (
                 <>
                   <button
@@ -171,7 +212,7 @@ export function Header() {
         isOpen={authModalOpen}
         onClose={() => {
           setAuthModalOpen(false);
-          setAuthMode(null)
+          setAuthMode(null);
         }}
         initialMode={authMode}
       />

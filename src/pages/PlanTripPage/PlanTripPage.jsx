@@ -30,7 +30,7 @@ export default function PlanTripPage() {
   const isAIMode = searchParams.get('mode') === 'ai';
   const setTrip = useTripStore((state) => state.setTrip);
   
-  const [destination, setDestination] = useState('');
+  const [destination, setDestination] = useState(null);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [interests, setInterests] = useState([]);
@@ -63,7 +63,7 @@ export default function PlanTripPage() {
     const formattedStartDate = start.toISOString().split('T')[0];
     const formattedEndDate = end.toISOString().split('T')[0];
     setTrip({
-      destination,
+      destination: {...destination, name: destination.label, coordinates: null},
       startDate: formattedStartDate,
       endDate: formattedEndDate,
       interests,
@@ -155,10 +155,7 @@ export default function PlanTripPage() {
                     selectProps={{
                       value: destination,
                       onChange: (v) => {
-                        setDestination({
-                          label: v.label,
-                          coordinates: null
-                        })
+                        setDestination(v);
                       },
                       placeholder: "Search for a destination...",
                       styles: {

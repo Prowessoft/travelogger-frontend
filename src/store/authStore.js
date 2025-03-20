@@ -49,9 +49,8 @@ const createAuthStore = (set) => ({
     }
   },
   updatePassword: async (email, password, newPassword) => {
-    try{
-    const response = await authService.updatePassword(email, password, newPassword);
-
+    try {
+      await authService.updatePassword(email, password, newPassword);  
     } catch (error) {
       console.log(error);
       throw error;
