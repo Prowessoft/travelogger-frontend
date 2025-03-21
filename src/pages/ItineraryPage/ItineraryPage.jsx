@@ -91,6 +91,7 @@ export default function ItineraryPage() {
   const [searching, setSearching] = useState(false);
   const [daysData, setDaysData] = useState([]);
   const [currentAddType, setCurrentAddType] = useState("activity");
+
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const markersRef = useRef([]);
@@ -541,7 +542,7 @@ export default function ItineraryPage() {
               <SortableActivityItem
                 key={itemIndex}
                 activity={item}
-                onRemove={() => removeActivity(dayIndex, itemIndex, item.type)}
+                onRemove={() => removeActivity(dayIndex, itemIndex, type)}
                 number={itemIndex + 1}
                 nextActivity={items[itemIndex + 1]}
               />
@@ -558,9 +559,9 @@ export default function ItineraryPage() {
           <Plus className="w-5 h-5" />
           <span className="text-sm">
             Add{" "}
-            {type === "hotel"
+            {type === "hotels"
               ? "a hotel"
-              : type === "restaurant"
+              : type === "restaurants"
               ? "a restaurant"
               : "an activity"}
           </span>
@@ -783,6 +784,7 @@ export default function ItineraryPage() {
         onClose={() => setIsPlaceSearchOpen(false)}
         onPlaceSelect={(place) => handlePlaceSelect(place, currentAddType)}
         mapCenter={mapInstanceRef.current?.getCenter()}
+        type={currentAddType}
       />
     </div>
   );

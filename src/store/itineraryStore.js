@@ -52,7 +52,7 @@ const createItineraryStore = (set, get) => ({
                 ...day,
                 sections: {
                   ...day.sections,
-                  [sectionType]: day.sections[sectionType].filter((a) => a.id !== activityId),
+                  [sectionType]: day.sections[sectionType].filter((a, index) => index !== activityId),
                 },
               }
             : day

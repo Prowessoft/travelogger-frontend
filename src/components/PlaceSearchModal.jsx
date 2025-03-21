@@ -2,8 +2,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import { X, MapPin, Star, Plus, Search, Loader2, Clock, Navigation, DollarSign } from 'lucide-react';
 import { getMapsLoader } from '../utils/mapsLoader';
 import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
+import { useTripStore } from "../store/tripStore";
 
-export function PlaceSearchModal({ isOpen, onClose, onPlaceSelect, mapCenter }) {
+export function PlaceSearchModal({ isOpen, onClose, onPlaceSelect, mapCenter, type }) {
   const [place, setPlace] = useState(null);
   const [loading, setLoading] = useState(false);
   const [mapsLoaded, setMapsLoaded] = useState(false);
@@ -11,6 +12,7 @@ export function PlaceSearchModal({ isOpen, onClose, onPlaceSelect, mapCenter }) 
   const searchService = useRef(null);
   const mapDiv = useRef(null);
   const modalRef = useRef(null);
+  const { currentTrip: trip } = useTripStore();
 
   useEffect(() => {
     if (!isOpen || mapsLoaded || !mapDiv.current) return;
@@ -50,7 +52,8 @@ export function PlaceSearchModal({ isOpen, onClose, onPlaceSelect, mapCenter }) 
           'formatted_phone_number',
           'types',
           'url'
-        ]
+        ],
+        locationBias: selectedPlace ? new google.maps.LatLng(selectedPlace.lat, selectedPlace.lng) : undefined,
       },
       (place, status) => {
         setLoading(false);
@@ -101,6 +104,13 @@ export function PlaceSearchModal({ isOpen, onClose, onPlaceSelect, mapCenter }) 
 
   if (!isOpen) return null;
 
+  const displayType =
+    type === "hotels"
+      ? "a Hotel"
+      : type === "restaurants"
+      ? "a Restaurant"
+      : "an Activity";
+
   return (
     <div 
       className="fixed inset-0 bg-black/50 flex items-start justify-center z-50 pt-[10vh]"
@@ -114,7 +124,7 @@ export function PlaceSearchModal({ isOpen, onClose, onPlaceSelect, mapCenter }) 
         {/* Header */}
         <div className="p-4 border-b border-gray-200 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-gray-900">
-            Add Place to Itinerary
+            Add {displayType} to Itinerary
           </h2>
           <button 
             onClick={onClose}
@@ -198,6 +208,11 @@ export function PlaceSearchModal({ isOpen, onClose, onPlaceSelect, mapCenter }) 
                     padding: 0
                   })
                 }
+              }}
+              autocompletionRequest={{
+                location: trip ? new google.maps.LatLng(trip.destination.coordinates[0], trip.destination.coordinates[1]) : undefined,
+                radius: 100000, // 50km radius
+                types: ["establishment"], // Filter results to places & addresses
               }}
             />
           </div>

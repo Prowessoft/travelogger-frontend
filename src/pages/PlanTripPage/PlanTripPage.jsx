@@ -63,7 +63,8 @@ export default function PlanTripPage() {
     const formattedStartDate = start.toISOString().split('T')[0];
     const formattedEndDate = end.toISOString().split('T')[0];
     setTrip({
-      destination: {...destination, name: destination.label, coordinates: null},
+      // destination: {...destination, name: destination.label, coordinates: [destination?.value?.geometry?.location?.lat, destination?.value?.geometry?.location?.lng]},
+      destination,
       startDate: formattedStartDate,
       endDate: formattedEndDate,
       interests,
@@ -85,6 +86,29 @@ export default function PlanTripPage() {
         navigatedFrom: 'manual'
       }, 
     });
+  };
+
+  const handlePlaceSelect = (selected) => {
+    // setDestination(selected); // Store selected place
+
+    if (!selected?.value?.place_id) return;
+
+    // Fetch place details (including coordinates) using Places API
+    const placesService = new google.maps.places.PlacesService(
+      document.createElement("div")
+    );
+
+    placesService.getDetails(
+      {
+        placeId: selected.value.place_id,
+        fields: ["geometry"], // Request only geometry (lat, lng)
+      },
+      (place, status) => {
+        if (status === google.maps.places.PlacesServiceStatus.OK && place) {
+          setDestination({...selected, name: selected.label, coordinates: [place.geometry.location.lat(), place.geometry.location.lng()]})
+        }
+      }
+    );
   };
 
   const selectDestination = (dest) => {
@@ -154,9 +178,7 @@ export default function PlanTripPage() {
                     apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
                     selectProps={{
                       value: destination,
-                      onChange: (v) => {
-                        setDestination(v);
-                      },
+                      onChange: handlePlaceSelect,
                       placeholder: "Search for a destination...",
                       styles: {
                         control: (provided) => ({
@@ -210,7 +232,7 @@ export default function PlanTripPage() {
                       label="Start Date"
                       selectedDate={startDate}
                       setSelectedDate={setStartDate}
-                      minDate={new Date().toISOString().split('T')[0]}
+                      minDate={new Date(new Date().setHours(0, 0, 0, 0))}
                     />
                   </div>
 
