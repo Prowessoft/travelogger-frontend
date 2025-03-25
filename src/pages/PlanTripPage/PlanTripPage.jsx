@@ -28,7 +28,7 @@ export default function PlanTripPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const isAIMode = searchParams.get('mode') === 'ai';
-  const setTrip = useTripStore((state) => state.setTrip);
+  const { setTrip } = useTripStore();
   
   const [destination, setDestination] = useState(null);
   const [startDate, setStartDate] = useState('');

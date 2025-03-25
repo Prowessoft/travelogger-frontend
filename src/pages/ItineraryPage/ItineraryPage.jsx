@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   DndContext,
@@ -39,7 +39,9 @@ import { toast } from "sonner";
 import { SortableActivityItem } from "../../components/SortableActivityItem";
 import { PlaceSearchModal } from "../../components/PlaceSearchModal";
 import { getMapsLoader } from "../../utils/mapsLoader";
-import { useLocation } from "react-router-dom";
+// import { useLocation } from "react-router-dom";
+import { useLocation, UNSAFE_NavigationContext as NavigationContext } from 'react-router-dom';
+// import { usePrevious } from "../../utils/locationUtils";
 
 const getDestinationImage = (des) => {
   const images = {
@@ -64,12 +66,20 @@ const getDestinationImage = (des) => {
   return images[cityKey] || images.default;
 };
 
+const usePrevious = (value) => {
+  const ref = useRef();
+  useEffect(() => {
+    ref.current = value;
+  }, [value]);
+  return ref.current;
+}
+
 export default function ItineraryPage() {
   const location = useLocation();
   const { itineraryId } = location.state || {};
   // const { id: itineraryId } = useParams();
   const navigate = useNavigate();
-  const { currentTrip: trip, setTrip } = useTripStore();
+  const { currentTrip: trip, setTrip, clearTrip } = useTripStore();
   const {
     days,
     selectedDay,
@@ -96,7 +106,16 @@ export default function ItineraryPage() {
   const mapInstanceRef = useRef(null);
   const markersRef = useRef([]);
   const [isLargeScreen, setIsLargeScreen] = useState(true);
+  // const prevLocation = usePrevious(location);
   const navigatedFrom = location.state?.navigatedFrom;
+  const navigator = useContext(NavigationContext).navigator;
+  const nextPathname = useRef(null);
+  const handleGlobalClickRef = useRef(null); // Ref to store the function
+
+  
+  // const prevLocation = usePrevious(location);
+
+
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -126,9 +145,10 @@ export default function ItineraryPage() {
   useEffect(() => {
     return () => {
       if(navigatedFrom !== 'ai') {
-        sessionStorage.removeItem("currentTrip"); // Clears only "trip" on route change
+        // clearTrip();
         setItinerary({});
-        console.log("Trip field cleared on route change");
+        initializeDays([]);
+        console.log('Trip field cleared on route change');
       }
     };
 }, [location]);
@@ -193,7 +213,7 @@ export default function ItineraryPage() {
         setLoading(true);
         let savedItinerary = itiData; // Default to existing data
   
-        if (itineraryId && !savedItinerary.id) { 
+        if (itineraryId && !savedItinerary?.id) { 
           // Only fetch if we don't already have it
           savedItinerary = await itineraryService.getItinerary(itineraryId);
           setTrip(savedItinerary.tripDetails);
@@ -277,7 +297,7 @@ export default function ItineraryPage() {
                   });
                   bounds.extend(position);
                   markersRef.current.push(marker);
-                  mapInstanceRef.current.fitBounds(bounds);
+                  mapInstanceRef?.current?.fitBounds(bounds);
                 }
               });
             };
@@ -310,8 +330,16 @@ export default function ItineraryPage() {
     // markersRef.current.forEach((marker) => marker.setMap(null));
     // markersRef.current = [];
     // };
-    
-  }, [trip, navigate, isLargeScreen]);
+    return () => {
+      markersRef.current.forEach((marker) => marker.setMap(null));
+      markersRef.current = [];
+  
+      // Optionally remove the map instance
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current = null;
+      }
+    };
+  }, [trip, navigate, isLargeScreen, days]);
 
   const handleSearch = () => {
     if (!searchQuery.trim() || !mapInstanceRef.current) return;
@@ -447,17 +475,30 @@ export default function ItineraryPage() {
     // })
   }
 
+  // const handleDragEnd = (event) => {
+  //   const { active, over } = event;
+  //   if (active.id !== over.id) {
+  //     const oldIndex = days[selectedDay].sections[currentAddType].findIndex(
+  //       (activity, index) => index + 1 === active.id
+  //     );
+  //     const newIndex = days[selectedDay].sections[currentAddType].findIndex(
+  //       (activity, index) => index + 1 === over.id
+  //     );
+  //     reorderActivities(selectedDay, oldIndex, newIndex, currentAddType);
+  //   }
+  // };
+
   const handleDragEnd = (event) => {
     const { active, over } = event;
-    if (active.id !== over.id) {
-      const oldIndex = days[selectedDay].activities.findIndex(
-        (activity) => activity.id === active.id
-      );
-      const newIndex = days[selectedDay].activities.findIndex(
-        (activity) => activity.id === over.id
-      );
-      reorderActivities(selectedDay, oldIndex, newIndex);
-    }
+    if (!over || active.id === over.id) return;
+  
+    const [type, activeIndexStr] = active.id.split('-');
+    const [_, overIndexStr] = over.id.split('-');
+  
+    const oldIndex = parseInt(activeIndexStr);
+    const newIndex = parseInt(overIndexStr);
+  
+    reorderActivities(selectedDay, oldIndex, newIndex, type);
   };
 
   const handleSave = async () => {
@@ -504,7 +545,10 @@ export default function ItineraryPage() {
   const handleShare = async () => {
     // TODO: Implement share functionality
     console.log("Sharing itinerary...");
+    toast.loading("sending itinerary to your email...");
     await emailService.sendEmail(days, trip, user);
+    toast.dismiss();
+    toast.success("Itinerary sent successfully!");
   };
 
   const renderSection = (day, dayIndex, type) => {
@@ -534,13 +578,14 @@ export default function ItineraryPage() {
           <h4 className="text-lg font-semibold text-gray-900">{title}</h4>
         </div>
         <SortableContext
-          items={items.map((item, index) => item.id || index)}
+          items={items.map((item, index) => index)}
           strategy={verticalListSortingStrategy}
         >
           <div className="space-y-4">
             {items.map((item, itemIndex) => (
               <SortableActivityItem
                 key={itemIndex}
+                id={`${type}-${itemIndex}`}
                 activity={item}
                 onRemove={() => removeActivity(dayIndex, itemIndex, type)}
                 number={itemIndex + 1}

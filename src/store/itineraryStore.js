@@ -1,26 +1,22 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 const createItineraryStore = (set, get) => ({
+  itinerary: null,
   days: [],
-  // itinerary: {
-  //   id: "",
-  //   userId: "",
-  //   title: "",
-  //   tripImg: "",
-  //   status: "draft",
-  //   visibility: "private",
-  //   tripDetails: {
-  //     destination: { name: "", coordinates: null },
-  //     startDate: "",
-  //     endDate: "",
-  //     budget: { currency: "USD", total: 0, breakdown: {} },
-  //   },
-  //   days: [], // This holds the days inside itinerary
-  //   sharedWith: [],
-  //   metadata: { tags: null, isTemplate: false, language: "en", version: 1 },
-  // },
   selectedDay: 0,
+
   initializeDays: (days) => set({ days }),
+
+  setItinerary: (itinerary) => {
+    set({
+      itinerary,
+      days: itinerary.days || [], // sync days from itinerary
+    });
+  },
+
+  getItinerary: () => get().itinerary,
+
   addActivity: (dayIndex, activity, sectionType) =>
     set((state) => {
       const updatedDays = state.days.map((day, idx) =>
@@ -29,44 +25,67 @@ const createItineraryStore = (set, get) => ({
               ...day,
               sections: {
                 ...day.sections,
-                [sectionType]: [...(day.sections[sectionType] || []), activity], // Append activity
+                [sectionType]: [...(day.sections[sectionType] || []), activity],
               },
             }
           : day
       );
-
-      return {
-          ...state,
-          days: updatedDays, // Ensure days inside itinerary are updated
-      };
+      return { days: updatedDays };
     }),
-  setItinerary: (itinerary) => set({ itinerary }),
-  getItinerary: () => get().itinerary, 
+
   removeActivity: (dayIndex, activityId, sectionType) =>
-    set((state) => ({
-      itinerary: {
-        ...state.itinerary,
-        days: state.itinerary.days.map((day, idx) =>
-          idx === dayIndex
-            ? {
-                ...day,
-                sections: {
-                  ...day.sections,
-                  [sectionType]: day.sections[sectionType].filter((a, index) => index !== activityId),
-                },
-              }
-            : day
-        ),
-      },
-    })),
-  reorderActivities: (dayIndex, startIndex, endIndex) =>
+    set((state) => {
+      const updatedDays =  state.days.map((day, idx) =>
+        idx === dayIndex
+          ? {
+              ...day,
+              sections: {
+                ...day.sections,
+                [sectionType]: day.sections[sectionType].filter((_, index) => index !== activityId),
+              },
+            }
+          : day
+      );
+      return {
+        days: updatedDays,
+        itinerary: {
+          ...state.itinerary,
+          days: updatedDays,
+        }
+      }
+    }),
+
+  reorderActivities: (dayIndex, startIndex, endIndex, type) =>
     set((state) => {
       const newDays = [...state.days];
-      const [removed] = newDays[dayIndex].activities.splice(startIndex, 1);
-      newDays[dayIndex].activities.splice(endIndex, 0, removed);
+      const [removed] = newDays[dayIndex].sections[type].splice(startIndex, 1);
+      newDays[dayIndex].sections[type].splice(endIndex, 0, removed);
       return { days: newDays };
     }),
+
   setSelectedDay: (dayIndex) => set({ selectedDay: dayIndex }),
 });
 
-export const useItineraryStore = create(createItineraryStore);
+// Wrap with persist and use sessionStorage
+export const useItineraryStore = create(
+  persist(createItineraryStore, {
+    name: 'itinerary-session',
+    storage: {
+      getItem: (key) => {
+        const item = sessionStorage.getItem(key);
+        return item ? JSON.parse(item) : null;
+      },
+      setItem: (key, value) => {
+        sessionStorage.setItem(key, JSON.stringify(value));
+      },
+      removeItem: (key) => {
+        sessionStorage.removeItem(key);
+      },
+    },
+    partialize: (state) => ({
+      itinerary: state.itinerary,
+      days: state.days,
+      selectedDay: state.selectedDay,
+    }),
+  })
+);

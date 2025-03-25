@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { calculateDistance, calculateTravelTime } from '../utils/distanceCalculator';
 
-export function SortableActivityItem({ activity, onRemove, number, nextActivity }) {
+export function SortableActivityItem({ id, activity, onRemove, number, nextActivity }) {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     title: activity.title,
@@ -40,7 +40,7 @@ export function SortableActivityItem({ activity, onRemove, number, nextActivity 
     transform,
     transition,
     isDragging
-  } = useSortable({ id: number });
+  } = useSortable({ id });
 
   const style = {
     transform: CSS.Transform.toString(transform),

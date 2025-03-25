@@ -265,6 +265,7 @@ async function fetchData() {
             ) : (
               existingUserItinerary?.length > 0 &&
               existingUserItinerary?.map((itinerary) => (
+                <>
                 <div
                   key={itinerary.id}
                   className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
@@ -318,6 +319,7 @@ async function fetchData() {
                     </div>
                   </div>
                 </div>
+                </>
               ))
             )}
           </div>
