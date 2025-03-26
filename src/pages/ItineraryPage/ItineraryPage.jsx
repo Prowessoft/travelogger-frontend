@@ -655,9 +655,11 @@ export default function ItineraryPage() {
                       <Calendar className="w-5 h-5" />
                       <span>
                         {/* {new Date(trip.startDate).toLocaleDateString()} - {new Date(trip.endDate).toLocaleDateString()} */}
-                        {new Date(trip.startDate).toLocaleDateString()}{" "}
+                        {new Date(
+                            `${trip.startDate}T00:00:00`
+                          ).toLocaleDateString()}{" "}
                         -{" "}
-                        {new Date(trip.endDate).toLocaleDateString()}
+                        {new Date(`${trip.endDate}T00:00:00`).toLocaleDateString()}
                       </span>
                     </div>
                   </div>

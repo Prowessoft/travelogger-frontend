@@ -306,9 +306,9 @@ async function fetchData() {
                         <div className="flex items-center gap-1">
                           <Clock className="w-4 h-4" />
                           {new Date(
-                            itinerary.startDate
+                            `${itinerary.startDate}T00:00:00`
                           ).toLocaleDateString()} -{" "}
-                          {new Date(itinerary.endDate).toLocaleDateString()}{" "}
+                          {new Date(`${itinerary.endDate}T00:00:00`).toLocaleDateString()}{" "}
                           days
                         </div>
                       </div>
