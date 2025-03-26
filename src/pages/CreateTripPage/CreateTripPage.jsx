@@ -10,6 +10,7 @@ import { getAIitineraryData } from '../../services/aiService';
 import { enrichItineraryWithPhotos } from '../../services/placesService';
 import { useTripStore } from '../../store/tripStore';
 import { useItineraryStore } from "../../store/itineraryStore";
+import { useAuthStore } from "../../store/authStore";
 
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -176,6 +177,8 @@ export default function CreateTripPage() {
   const [searchParams] = useSearchParams();
   const isAIMode = searchParams.get('mode') === 'ai';
   const setTrip = useTripStore(state => state.setTrip);
+  const { user } = useAuthStore();
+
   
   const [place, setPlace] = useState(null);
   const [formData, setFormData] = useState({
@@ -230,6 +233,13 @@ export default function CreateTripPage() {
     return null;
   };
 
+  useEffect(() => {
+    if (error) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [error]);
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -247,6 +257,11 @@ export default function CreateTripPage() {
     }
     if (!formData.budget) {
       setError("Please select a budget range");
+      return;
+    }
+
+    if (!user) {
+      toast.error("Please sign in to save your itinerary");
       return;
     }
 
@@ -440,7 +455,7 @@ export default function CreateTripPage() {
                           selectedDate={formData.startDate}
                           setData= "startDate"
                           // onChange={(e) => handleInputChange('startDate', e.target.value)}
-                          minDate={new Date().toISOString().split('T')[0]}
+                          minDate={new Date().setHours(0, 0, 0, 0)}
                         />
                       </div>
 
@@ -451,7 +466,7 @@ export default function CreateTripPage() {
                           selectedDate={formData.endDate}
                           setData= "endDate"
                           // onChange={(e) => handleInputChange('endDate', e.target.value)}
-                          minDate={formData.startDate || new Date().toISOString().split('T')[0]}
+                          minDate={formData.startDate || new Date().setHours(0, 0, 0, 0)}
                         />
                       </div>
                     </div>
