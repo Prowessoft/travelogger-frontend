@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
+import { ScrollToTop } from './components/ScrollToTop';
 import GoogleMapsLoader from "./GoogleMapsLoader";
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
@@ -37,6 +38,7 @@ function App() {
         <Header />
         <GoogleMapsLoader />
         <Toaster position="top-center" richColors />
+        <ScrollToTop />
         <Routes>
           <Route path="/" element={
             <>
