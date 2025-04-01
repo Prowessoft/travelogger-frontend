@@ -2,8 +2,8 @@ import axios from 'axios';
 
 // Create axios instance with default config
 const axiosInstance = axios.create({
-  baseURL: 'http://travelogger-backend.eba-2i3kpbc5.us-east-1.elasticbeanstalk.com/api', // Base URL for all requests
-  // baseURL: 'http://api.dev.travelogger.info/api', // Base URL for all requests
+  // baseURL: 'https://travelogger-backend.eba-2i3kpbc5.us-east-1.elasticbeanstalk.com/api', // Base URL for all requests
+  baseURL: 'https://dev.travelogger.info/api', // Base URL for all requests
   // baseURL: 'http://localhost:8080/api', // Base URL for all requests
   headers: {
     'Content-Type': 'application/json',
@@ -18,30 +18,30 @@ const axiosInstance = axios.create({
 
 // Add retry interceptor
 axiosInstance.interceptors.response.use(null, async error => {
-  const { config } = error;
-  if (!config || !config.retry) {
-    return Promise.reject(error);
-  }
-
-  config.retryCount = config.retryCount || 0;
-
-  if (config.retryCount >= config.retry) {
-    // If we've maxed out retries, check if it's a network error
-    if (!error.response) {
-      return Promise.reject(new Error(
-        'Unable to connect to the server. Please check if the server is running and try again.'
-      ));
+      const { config } = error;
+    if (!config || !config.retry) {
+      return Promise.reject(error);
     }
-    return Promise.reject(error);
-  }
-
-  config.retryCount += 1;
-  console.log(`Retrying request (${config.retryCount}/${config.retry})...`);
-
-  // Delay before retrying
-  await new Promise(resolve => setTimeout(resolve, config.retryDelay));
-  return axiosInstance(config);
-});
+  
+    config.retryCount = config.retryCount || 0;
+  
+    if (config.retryCount >= config.retry) {
+      // If we've maxed out retries, check if it's a network error
+      if (!error.response) {
+        return Promise.reject(new Error(
+          'Unable to connect to the server. Please check if the server is running and try again.'
+        ));
+      }
+      return Promise.reject(error);
+    }
+  
+    config.retryCount += 1;
+    console.log(`Retrying request (${config.retryCount}/${config.retry})...`);
+  
+    // Delay before retrying
+    await new Promise(resolve => setTimeout(resolve, config.retryDelay));
+    return axiosInstance(config);
+  });
 
 // Add request interceptor
 axiosInstance.interceptors.request.use(
