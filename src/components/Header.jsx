@@ -37,6 +37,22 @@ export function Header() {
     }
   }
 
+  const handleSignOut =  () => {
+    const loadingToastId = toast.loading("Signing out...");
+    try {
+      signOut();
+      setTimeout(() => {
+        toast.dismiss(loadingToastId);
+        toast.success("Signed out successfully!!");
+        setIsOpen(false);
+        navigate("/");
+      }, 500);
+    } catch (error) {
+      toast.dismiss();
+      console.log(error);
+    }
+  };
+
   return (
     <>
       <header className="fixed w-full bg-white/80 backdrop-blur-md z-50 py-4 shadow-sm">
@@ -69,6 +85,7 @@ export function Header() {
                   <button
                     className="flex items-center gap-2 focus:outline-none px-3 py-2 rounded-lg"
                     onMouseEnter={() => setIsOpen(true)} // Open on hover
+                    onMouseLeave={() => setIsOpen(false)} // Close when mouse leaves dropdown
                   >
                     <img
                       src={user.avatarImgUrl}
@@ -105,11 +122,7 @@ export function Header() {
                       </li>
                       <li>
                         <button
-                          onClick={() => {
-                            signOut();
-                            navigate("/");
-                            setIsOpen(false);
-                          }}
+                          onClick={handleSignOut}
                           className="flex w-full text-left px-4 py-2 hover:bg-gray-100"
                         >
                           Sign Out
@@ -186,11 +199,7 @@ export function Header() {
               {isAuthenticated ? (
                 <>
                   <button
-                    onClick={() => {
-                      signOut();
-                      navigate("/");
-                      setMobileMenuOpen(false);
-                    }}
+                    onClick={handleSignOut}
                     className="text-gray-600 hover:text-gray-900 font-medium py-2 text-left"
                   >
                     Sign Out

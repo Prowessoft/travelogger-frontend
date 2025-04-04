@@ -62,9 +62,9 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }) {
 
     try {
       if (mode === "signin") {
-        await signIn(email, password);
+        await signIn(email.toLowerCase(), password);
       } else {
-        await signUp(email, password, name, selectedAvatar);
+        await signUp(email.toLowerCase(), password, name, selectedAvatar);
       }
       onClose();
     } catch (error) {

@@ -62,6 +62,9 @@ export default function PlanTripPage() {
     }
     const formattedStartDate = start.toISOString().split('T')[0];
     const formattedEndDate = end.toISOString().split('T')[0];
+    // const dallasPhoto = await getPhotoForLocationOrPlace({
+    //   name: "Dallas, Texas"
+    // });
     setTrip({
       // destination: {...destination, name: destination.label, coordinates: [destination?.value?.geometry?.location?.lat, destination?.value?.geometry?.location?.lng]},
       destination,
@@ -101,11 +104,23 @@ export default function PlanTripPage() {
     placesService.getDetails(
       {
         placeId: selected.value.place_id,
-        fields: ["geometry"], // Request only geometry (lat, lng)
+        fields: ["geometry", "photos"], // Request only geometry (lat, lng)
       },
       (place, status) => {
         if (status === google.maps.places.PlacesServiceStatus.OK && place) {
-          setDestination({...selected, name: selected.label, coordinates: [place.geometry.location.lat(), place.geometry.location.lng()]})
+          const lat = place.geometry?.location?.lat();
+          const lng = place.geometry?.location?.lng();
+  
+          // Get photo URL if available
+          const photoUrl = place.photos?.[0]?.getUrl({
+            maxWidth: 1200,
+          });
+          setDestination({
+          ...selected,
+          name: selected.label,
+          coordinates: [lat, lng],
+          photoUrl: photoUrl || null, // You could also fallback here if needed
+        });
         }
       }
     );

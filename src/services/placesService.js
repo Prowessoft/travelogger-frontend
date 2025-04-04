@@ -27,52 +27,38 @@ const getRandomFallbackImage = (type) => {
   return images[Math.floor(Math.random() * images.length)];
 };
 
-const searchPlace = async (placeName, location) => {
+const getPhotoForLocationOrPlace = async ({ name, type = 'default', location = '' }) => {
   try {
     const loader = getMapsLoader();
     await loader.load();
 
-    const service = new google.maps.places.PlacesService(
-      document.createElement('div')
-    );
+    const service = new google.maps.places.PlacesService(document.createElement('div'));
 
-    return new Promise((resolve, reject) => {
+    const query = location ? `${name}, ${location}` : name;
+
+    const result = await new Promise((resolve, reject) => {
       service.findPlaceFromQuery(
         {
-          query: `${placeName} ${location}`,
-          fields: ['name', 'place_id', 'photos', 'formatted_address']
+          query,
+          fields: ['name', 'place_id', 'photos', 'formatted_address'],
         },
         (results, status) => {
           if (status === google.maps.places.PlacesServiceStatus.OK && results?.[0]) {
             resolve(results[0]);
           } else {
-            reject(new Error('Place not found'));
+            reject(new Error(`No result found for query: ${query}`));
           }
         }
       );
     });
-  } catch (error) {
-    throw new Error(`Failed to search place: ${error.message}`);
-  }
-};
 
-const getPlacePhoto = async (placeName, type, location) => {
-  try {
-    const place = await searchPlace(placeName, location);
-    
-    if (place?.photos?.[0]) {
-
-      return place.photos;
-      // return place.photos[0].getUrl({
-      //   maxWidth: 1000,
-      //   maxHeight: 1000
-      // });
+    if (result?.photos?.length) {
+      return result.photos[0].getUrl({ maxWidth: 1200 });
     }
-    
-    // If no photos available, use fallback
+
     return getRandomFallbackImage(type);
   } catch (error) {
-    console.warn(`Failed to get photo for ${placeName}:`, error);
+    console.warn(`Photo fetch failed for "${name}" (${type})`, error);
     return getRandomFallbackImage(type);
   }
 };
@@ -110,7 +96,7 @@ export const enrichItineraryWithPhotos = async (tripPlan) => {
           ? await Promise.all(
               day.sections.activities.map(async (activity) => ({
                 ...activity,
-                photos: await getPlacePhoto(activity.name, 'activity', name)
+                photos: await getPhotoForLocationOrPlace(activity.name, 'activity', name)
               }))
             )
           : [];
@@ -119,7 +105,7 @@ export const enrichItineraryWithPhotos = async (tripPlan) => {
           ? await Promise.all(
               day.sections.hotels.map(async (hotel) => ({
                 ...hotel,
-                photos: await getPlacePhoto(hotel.name, 'hotel', name)
+                photos: await getPhotoForLocationOrPlace(hotel.name, 'hotel', name)
               }))
             )
           : [];
@@ -129,7 +115,7 @@ export const enrichItineraryWithPhotos = async (tripPlan) => {
           ? await Promise.all(
               day.sections.restaurants.map(async (restaurant) => ({
                 ...restaurant,
-                photos: await getPlacePhoto(restaurant.name, 'restaurant', name)
+                photos: await getPhotoForLocationOrPlace(restaurant.name, 'restaurant', name)
               }))
             )
           : [];

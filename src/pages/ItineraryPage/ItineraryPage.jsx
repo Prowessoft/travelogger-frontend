@@ -659,7 +659,7 @@ export default function ItineraryPage() {
           {/* Hero Header */}
           <div className="relative h-[300px]">
             <img
-              src={getDestinationImage(trip?.destination)}
+              src={trip?.destination?.photoUrl || getDestinationImage(trip?.destination)}
               alt={trip?.destination || "Destination"}
               className="w-full h-full object-cover"
             />
