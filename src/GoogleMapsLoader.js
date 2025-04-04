@@ -10,7 +10,7 @@ const loadGoogleMapsScript = (apiKey) => {
 
   if (!existingScript) {
     const script = document.createElement("script");
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places,geometry,geocoding`;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places,geometry,geocoding&loading=async`;
     script.async = true;
     script.defer = true;
     document.head.appendChild(script);

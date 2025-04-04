@@ -1,12 +1,19 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Sparkles, Target, Lightbulb, Zap } from 'lucide-react';
+import { useAuthStore } from "../../store/authStore";
+import { toast } from "sonner";
 
 
 export default function AIPlannerPage() {
   const navigate = useNavigate();
+  const { user } = useAuthStore();
 
   const handleGetStarted = () => {
+    if (!user) {
+      toast.error("Please signin to generate AI itinerary");
+      return;
+    }
     navigate('/create-trip?mode=ai');
   };
 

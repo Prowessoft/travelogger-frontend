@@ -93,7 +93,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }) {
   const handleEmailChange = (e) => {
     const newEmail = e.target.value;
     setEmail(newEmail);
-    setErrors((prev) => ({ ...prev, email: validateEmail(newEmail) ? "" : "Invalid email format or too long" }));
+    setErrors((prev) => ({ ...prev, email: validateEmail(newEmail) ? "" : "Invalid email format. Please enter a valid email address." }));
   };
 
   const handlePasswordChange = (e) => {
@@ -151,6 +151,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }) {
             </h2>
             <button
               onClick={onClose}
+              // disabled={errors}
               className="p-2 hover:bg-gray-100 rounded-full transition-colors"
             >
               <X className="w-5 h-5 text-gray-500" />
@@ -197,6 +198,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }) {
                       onChange={handleNameChange}
                       className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                       placeholder="Enter your name"
+                      maxLength={20}
                       required
                     />
                   </div>
@@ -215,6 +217,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }) {
                       className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                       placeholder="Enter your email"
                       autoComplete={mode === "signin" ? "on" : "new-email"}
+                      maxLength={60}
                       required
                     />
                   </div>
@@ -238,6 +241,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }) {
                           : "Create a password"
                       }
                       autoComplete={mode === "signin" ? "on" : "new-password"}
+                      maxLength={64}
                       required
                     />
                   </div>
@@ -256,13 +260,15 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }) {
                     <input
                       type="email"
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      onChange={handleEmailChange}
                       className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                       placeholder="Enter your email"
                       autoComplete={mode === "signin" ? "on" : "new-email"}
+                      maxLength={60}
                       required
                     />
                   </div>
+                  {errors.email && <p className="text-red-500 text-sm mt-2">{errors.email}</p>}
                 </div>
 
                 <div>
@@ -282,6 +288,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }) {
                           : "Create a password"
                       }
                       autoComplete={mode === "signin" ? "on" : "new-password"}
+                      maxLength={64}
                       required
                     />
                   </div>
@@ -350,6 +357,11 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }) {
               type="submit"
               disabled={loading}
               className="w-full bg-primary-600 text-white py-3 rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2 text-sm font-medium margin-top-20"
+              // ${
+              //   !validateEmail(email) || !!error
+              //     ? "bg-primary-300 cursor-not-allowed"
+              //     : "bg-primary-600 hover:bg-primary-700"
+              // }
             >
               {loading ? (
                 <>
@@ -384,18 +396,17 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }) {
                   <div className="flex-grow border-t border-gray-300"></div>
                 </div>
                 <div className="mt-4">
-                  <GoogleLoginButton />
+                  <GoogleLoginButton onClose={onClose}/>
                 </div>
               </div>
             </div>
-
-            {/* Forgot Password Modal */}
-            <ForgotPasswordModal
+          </form>
+        </div>
+        {/* Forgot Password Modal */}
+        <ForgotPasswordModal
               isForgotPassModalOpen={isForgotPasswordOpen}
               onClose={() => setIsForgotPasswordOpen(false)}
             />
-          </form>
-        </div>
       </div>
     </div>
   );

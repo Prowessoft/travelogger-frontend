@@ -157,7 +157,7 @@ async function fetchData() {
   }, [user?.id, activeTab]);
 
   const handleEditItinerary = (itineraryId) => {
-    navigate(`/itinerary`, { state: { itineraryId: itineraryId } });
+    navigate(`/itinerary`, { state: { itineraryId: itineraryId, navigatedFrom: 'manual' } });
   };
 
   if (!isAuthenticated) {
@@ -230,6 +230,88 @@ async function fetchData() {
       toast.error('Failed to load itineraries');
     }
   }
+  const renderItineraryTabContent = (userItineraries) => {
+    let filteredItinerary;
+    if(activeTab === 'manual') {
+      filteredItinerary = userItineraryData.filter(iti => iti.generatedBy.toUpperCase() ==='MANUAL')
+    } else if(activeTab === 'ai') {
+      filteredItinerary = userItineraryData.filter(iti => iti.generatedBy.toUpperCase() ==='AI');
+    } else {
+      filteredItinerary = userItineraryData;
+    }
+    return (
+      filteredItinerary.length === 0 ? (
+        <div className="col-span-2 text-center py-8">
+          <p className="text-gray-600 mb-4">No {activeTab == 'manual'? 'Manual' : activeTab == 'ai' ? 'AI' : 'Saved' } itineraries found.</p>
+          <button
+            onClick={() => navigate(`${activeTab == 'ai' ? '/ai-planner' : '/plan-trip'}`)}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+          >
+            Create New Trip
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
+      ) : (filteredItinerary?.length > 0 &&
+      filteredItinerary?.map((itinerary, index) => (
+      <>
+      <div
+        key={itinerary.id || index}
+        className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+        onClick={() => handleEditItinerary(itinerary.id)}
+      >
+        <div className="relative h-48">
+          <img
+            src={itinerary.image || dummyItineraries[0].image}
+            alt={itinerary.title}
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <div className="p-4">
+          <div className="flex items-center gap-2 text-sm text-gray-600 mb-2 justify-between ">
+            <div className="flex items-center gap-1">
+              <MapPin className="w-4 h-4" />
+              {itinerary.destinationName}
+            </div>
+            <div className="flex items-center">
+            <button
+              onClick={(event) =>{
+                event.stopPropagation();
+                onRemoveItinerary(itinerary.id);
+              }
+                }
+              className="p-1.5 rounded-full hover:bg-gray-200"
+              // aria-label={`Remove ${activity.title}`}
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+            </div>
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            {itinerary.title}
+          </h3>
+          <div className="flex items-center justify-between text-sm text-gray-600">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-1">
+                <Clock className="w-4 h-4" />
+                {new Date(
+                  `${itinerary.startDate}T00:00:00`
+                ).toLocaleDateString()} -{" "}
+                {new Date(`${itinerary.endDate}T00:00:00`).toLocaleDateString()}{" "}
+                days
+              </div>
+            </div>
+            <div className="flex items-center gap-1">
+              <DollarSign className="w-4 h-4" />
+              {itinerary?.budget?.total.toFixed(2) || 0}
+            </div>
+          </div>
+        </div>
+      </div>
+      </>
+    )
+    )) 
+    );
+  }
 
   const renderTabContent = () => {
     const existingUserItinerary = userItineraryData ? userItineraryData :  dummyItineraries;
@@ -242,8 +324,10 @@ async function fetchData() {
       // Convert milliseconds to days
       return Math.ceil(timeDifference / (1000 * 3600 * 24));
     }
-    switch (activeTab) {
+    switch (activeTab) {   
       case 'itineraries':
+      case 'manual':
+      case 'ai':
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {loadingItineraries ? (
@@ -251,132 +335,62 @@ async function fetchData() {
                 <Loader2 className="w-8 h-8 text-primary-600 animate-spin mx-auto mb-4" />
                 <p className="text-gray-600">Loading itineraries...</p>
               </div>
-            ) : existingUserItinerary.length === 0 ? (
-              <div className="col-span-2 text-center py-8">
-                <p className="text-gray-600 mb-4">No itineraries found</p>
-                <button
-                  onClick={() => navigate("/plan-trip")}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
-                >
-                  Create New Trip
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
-            ) : (
-              existingUserItinerary?.length > 0 &&
-              existingUserItinerary?.map((itinerary) => (
-                <>
-                <div
-                  key={itinerary.id}
-                  className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
-                  onClick={() => handleEditItinerary(itinerary.id)}
-                >
-                  <div className="relative h-48">
-                    <img
-                      src={itinerary.image || dummyItineraries[0].image}
-                      alt={itinerary.title}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="p-4">
-                    <div className="flex items-center gap-2 text-sm text-gray-600 mb-2 justify-between ">
-                      <div className="flex items-center gap-1">
-                        <MapPin className="w-4 h-4" />
-                        {itinerary.destinationName}
-                      </div>
-                      <div className="flex items-center">
-                      <button
-                        onClick={(event) =>{
-                          event.stopPropagation();
-                          onRemoveItinerary(itinerary.id);
-                        }
-                          }
-                        className="p-1.5 rounded-full hover:bg-gray-200"
-                        // aria-label={`Remove ${activity.title}`}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                      </div>
-                    </div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                      {itinerary.title}
-                    </h3>
-                    <div className="flex items-center justify-between text-sm text-gray-600">
-                      <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-1">
-                          <Clock className="w-4 h-4" />
-                          {new Date(
-                            `${itinerary.startDate}T00:00:00`
-                          ).toLocaleDateString()} -{" "}
-                          {new Date(`${itinerary.endDate}T00:00:00`).toLocaleDateString()}{" "}
-                          days
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <DollarSign className="w-4 h-4" />
-                        {itinerary?.budget?.total.toFixed(2) || 0}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                </>
-              ))
-            )}
+            ) : renderItineraryTabContent('itineraries')}
           </div>
         );
 
-      case "posts":
-        const postsData = dummyPosts.length > 0 ? dummyPosts : [];
-        return (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {postsData.length > 0 ? (postsData?.map((post) => (
-              <div 
-                key={post.id}
-                className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
-              >
-                <div className="relative h-48">
-                  <img 
-                    src={post.image}
-                    alt={post.title}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="p-4">
-                  <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
-                    <MapPin className="w-4 h-4" />
-                    {post.location}
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                    {post.title}
-                  </h3>
-                  <div className="flex items-center justify-between text-sm text-gray-600">
-                    <div className="flex items-center gap-4">
-                      <span>{post.likes} likes</span>
-                      <span>{post.comments} comments</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Calendar className="w-4 h-4" />
-                      {new Date(post.date).toLocaleDateString()}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))) : (
-              <div className="col-span-2 text-center py-8">
-                <p className="text-gray-600 mb-4">No Posts found</p>
-                <button
-                  onClick={() => navigate('/plan-trip')}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
-                >
-                  Create New Post
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
-            )}
-          </div>
-        );
+      // case "posts":
+      //   const postsData = dummyPosts.length > 0 ? dummyPosts : [];
+      //   return (
+      //     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      //       {postsData.length > 0 ? (postsData?.map((post) => (
+      //         <div 
+      //           key={post.id}
+      //           className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+      //         >
+      //           <div className="relative h-48">
+      //             <img 
+      //               src={post.image}
+      //               alt={post.title}
+      //               className="w-full h-full object-cover"
+      //             />
+      //           </div>
+      //           <div className="p-4">
+      //             <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
+      //               <MapPin className="w-4 h-4" />
+      //               {post.location}
+      //             </div>
+      //             <h3 className="text-lg font-semibold text-gray-900 mb-2">
+      //               {post.title}
+      //             </h3>
+      //             <div className="flex items-center justify-between text-sm text-gray-600">
+      //               <div className="flex items-center gap-4">
+      //                 <span>{post.likes} likes</span>
+      //                 <span>{post.comments} comments</span>
+      //               </div>
+      //               <div className="flex items-center gap-1">
+      //                 <Calendar className="w-4 h-4" />
+      //                 {new Date(post.date).toLocaleDateString()}
+      //               </div>
+      //             </div>
+      //           </div>
+      //         </div>
+      //       ))) : (
+      //         <div className="col-span-2 text-center py-8">
+      //           <p className="text-gray-600 mb-4">No Posts found</p>
+      //           <button
+      //             onClick={() => navigate('/plan-trip')}
+      //             className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+      //           >
+      //             Create New Post
+      //             <ArrowRight className="w-4 h-4" />
+      //           </button>
+      //         </div>
+      //       )}
+      //     </div>
+      //   );
 
-      case "saved":
+      // case "saved":
         const savedData = dummyPosts.length > 0 ? dummyPosts : [];
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -843,7 +857,35 @@ async function fetchData() {
             }`}
           >
             <Map className="w-4 h-4" />
-            Itineraries
+            All Itineraries
+          </button>
+          <button
+            onClick={() => {
+              setActiveTab("manual");
+              // renderItineraryTabContent(existingUserItinerary);
+            }}
+            className={`flex items-center gap-2 px-6 py-3 text-sm font-medium border-b-2 -mb-px ${
+              activeTab === "manual"
+                ? "border-primary-600 text-primary-600"
+                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+            }`}
+          >
+            <Map className="w-4 h-4" />
+            Manual Itineraries
+          </button>
+          <button
+            onClick={() => {
+              setActiveTab("ai");
+              // renderItineraryTabContent(existingUserItinerary);
+            }}
+            className={`flex items-center gap-2 px-6 py-3 text-sm font-medium border-b-2 -mb-px ${
+              activeTab === "ai"
+                ? "border-primary-600 text-primary-600"
+                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+            }`}
+          >
+            <Map className="w-4 h-4" />
+            AI Itineraries
           </button>
           {/* <button
             onClick={() => setActiveTab("posts")}

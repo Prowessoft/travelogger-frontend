@@ -1,8 +1,14 @@
 import React from "react";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import axiosInstance from '../utils/axiosConfig';
+import ForgotPasswordModal from "./auth/ForgotPasswordModal";
+import { useState } from "react";
+import { useAuthStore } from "../store/authStore";
 
-const GoogleLoginButton = () => {
+
+
+
+const GoogleLoginButton = ({onClose}) => {
   // const handleSuccess = (response) => {
   //   const idToken = response.credential; // This is the Google ID token
 
@@ -20,6 +26,11 @@ const GoogleLoginButton = () => {
   //     .then((data) => console.log("Server Response:", data))
   //     .catch((error) => console.error("Error:", error));
   // };
+  const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false); // New State
+  const [googleEmail, setGoogleEmail] = useState(null);
+  const { googleSignIn } = useAuthStore();
+
+
 
   const handleSuccess = async (response) => {
     const idToken = response.credential; // This is the Google ID token
@@ -32,10 +43,19 @@ const GoogleLoginButton = () => {
         { idToken: idToken }, // Sending token as JSON
         { headers: { "Content-Type": "application/json" } } // Axios handles JSON conversion
       );
-  
+
+      googleSignIn(backendResponse.data);
+      onClose();
+
       console.log("Server Response:", backendResponse.data);
     } catch (error) {
-      console.error("Error:", error.response ? error.response.data : error.message);
+      console.error("Error:", error);
+      if (error.status === 400) {
+        const msg = error.data.message;
+        setGoogleEmail(msg.substring(msg.indexOf("'") + 1, msg.lastIndexOf("'")));
+        setIsForgotPasswordOpen(true);
+      }
+      return error;
     }
   };
   const handleFailure = (error) => {
@@ -43,9 +63,17 @@ const GoogleLoginButton = () => {
   };
 
   return (
-    <GoogleOAuthProvider clientId="669615181991-fjjg47d9r1rt8bjkfctjkgqkc3et6k5m.apps.googleusercontent.com">
+    <>
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_LOGIN_API_KEY}>
       <GoogleLogin onSuccess={handleSuccess} onError={handleFailure} />
     </GoogleOAuthProvider>
+    <ForgotPasswordModal
+      isForgotPassModalOpen={isForgotPasswordOpen}
+      onClose={() => setIsForgotPasswordOpen(false)}
+      googleLoginEmail= {googleEmail}
+    />
+    </>
+    
   );
 };
 

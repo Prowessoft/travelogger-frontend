@@ -41,7 +41,7 @@ import { PlaceSearchModal } from "../../components/PlaceSearchModal";
 import { getMapsLoader } from "../../utils/mapsLoader";
 // import { useLocation } from "react-router-dom";
 import { useLocation, UNSAFE_NavigationContext as NavigationContext } from 'react-router-dom';
-// import { usePrevious } from "../../utils/locationUtils";
+import ShareViaEmailModal from "../../modals/ShareViaEmailModal";
 
 const getDestinationImage = (des) => {
   const images = {
@@ -111,6 +111,7 @@ export default function ItineraryPage() {
   const navigator = useContext(NavigationContext).navigator;
   const nextPathname = useRef(null);
   const handleGlobalClickRef = useRef(null); // Ref to store the function
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   
   // const prevLocation = usePrevious(location);
@@ -144,7 +145,12 @@ export default function ItineraryPage() {
 
   useEffect(() => {
     return () => {
-      if(navigatedFrom !== 'ai') {
+      // if((!getItinerary() || !itineraryId)) {
+      //   if(navigatedFrom !== 'manual') {
+      //     navigate('/');
+      //   }
+      // }
+      if(navigatedFrom !== 'ai' || (navigatedFrom !== 'profile' && navigatedFrom !== 'ai')) {
         // clearTrip();
         setItinerary({});
         initializeDays([]);
@@ -523,6 +529,11 @@ export default function ItineraryPage() {
       });
       // // attach trip image to trip
       getItinerary().tripImg = getDestinationImage(trip.destination.name);
+      if(navigatedFrom === 'ai') {
+        setItinerary({...getItinerary(), generatedBy: 'AI'});
+      } else {
+        setItinerary({...getItinerary(), generatedBy: 'MANUAL'});
+      }
       if (itineraryId) {
         // await itineraryService.updateItinerary(itineraryId, daysData, trip, user);
         // const budget = {planned: 0, actual: 0};
@@ -542,13 +553,27 @@ export default function ItineraryPage() {
     }
   };
 
-  const handleShare = async () => {
+  const handleShare = async (email) => {
     // TODO: Implement share functionality
     console.log("Sharing itinerary...");
-    toast.loading("sending itinerary to your email...");
-    await emailService.sendEmail(days, trip, user);
-    toast.dismiss();
-    toast.success("Itinerary sent successfully!");
+    try{
+      toast.loading("sending itinerary to your email...");
+      await emailService.sendEmail(days, trip, email);
+      toast.dismiss();
+      toast.success("Itinerary sent successfully!");
+    } catch (error) {
+      console.error("Save error:", error);
+      toast.dismiss();
+      toast.error(error.message || "Failed to send itinerary");
+    }  
+  };
+
+  const handleShareClick = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
   };
 
   const renderSection = (day, dayIndex, type) => {
@@ -692,7 +717,7 @@ export default function ItineraryPage() {
                       Save
                     </button>
                     <button
-                      onClick={handleShare}
+                      onClick={handleShareClick}
                       className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors"
                     >
                       <Share2 className="w-4 h-4" />
@@ -701,7 +726,7 @@ export default function ItineraryPage() {
                   </div>
 
                   {/* Budget Summary */}
-                  <div className="bg-gray-50 rounded-lg p-3 flex items-center gap-3">
+                  {trip?.budget && trip?.budget?.total !== 0 && <div className="bg-gray-50 rounded-lg p-3 flex items-center gap-3">
                     <div className="p-2 bg-primary-100 rounded-lg">
                       <Calculator className="w-5 h-5 text-primary-600" />
                     </div>
@@ -716,7 +741,7 @@ export default function ItineraryPage() {
                         {trip?.budget?.total}
                       </div>
                     </div>
-                  </div>
+                  </div>}
                 </div>
               </div>
             </div>
@@ -755,7 +780,7 @@ export default function ItineraryPage() {
                             {day.sections.hotels.length + day.sections.restaurants.length + day.sections.activities.length}{"  "}
                             {day.sections.hotels.length + day.sections.restaurants.length + day.sections.activities.length === 1 ? "item" : "items"}
                           </span>
-                          { day.budget?.planned  && <div className="flex items-center gap-1 text-primary-600">
+                          { day?.budget && day.budget?.planned !== 0  && <div className="flex items-center gap-1 text-primary-600">
                             <DollarSign className="w-4 h-4" />
                             <span>
                               {day.budget?.planned || ''}
@@ -774,10 +799,10 @@ export default function ItineraryPage() {
                     {expandedDay === index && (
                       <div className="p-4 border-t border-gray-100">
                         {/* Daily Budget Summary */}
-                        <div className="mb-6 bg-gray-50 rounded-lg p-4">
-                          { day.budget?.planned  && <div className="flex items-center justify-between mb-2">
+                        { day?.budget && day.budget?.planned !== 0 && <div className="mb-6 bg-gray-50 rounded-lg p-4">
+                           <div className="flex items-center justify-between mb-2">
                             <h4 className="font-medium text-gray-900">
-                              Daily Budget
+                              Daily Budget 
                             </h4>
                             <div className="flex font-bold text-primary-600">
                               <DollarSign className="w-4" />
@@ -785,12 +810,12 @@ export default function ItineraryPage() {
                               {/* ${calculateDayBudget(day.activities).toFixed(2)} */}
                               {day.budget?.planned || ''}
                             </div>
-                          </div>}
+                          </div>
                           <div className="text-sm text-gray-600">
                             Includes all activities, restaurants, and
                             accommodations for the day
                           </div>
-                        </div>
+                        </div>}
 
                         {renderSection(day, index, "hotels")}
                         {renderSection(day, index, "activities")}
@@ -832,6 +857,12 @@ export default function ItineraryPage() {
         onPlaceSelect={(place) => handlePlaceSelect(place, currentAddType)}
         mapCenter={mapInstanceRef.current?.getCenter()}
         type={currentAddType}
+      />
+
+      <ShareViaEmailModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onSubmit={handleShare}
       />
     </div>
   );

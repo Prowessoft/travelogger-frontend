@@ -10,7 +10,6 @@ import { getAIitineraryData } from '../../services/aiService';
 import { enrichItineraryWithPhotos } from '../../services/placesService';
 import { useTripStore } from '../../store/tripStore';
 import { useItineraryStore } from "../../store/itineraryStore";
-import { useAuthStore } from "../../store/authStore";
 
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -177,7 +176,6 @@ export default function CreateTripPage() {
   const [searchParams] = useSearchParams();
   const isAIMode = searchParams.get('mode') === 'ai';
   const setTrip = useTripStore(state => state.setTrip);
-  const { user } = useAuthStore();
 
   
   const [place, setPlace] = useState(null);
@@ -257,11 +255,6 @@ export default function CreateTripPage() {
     }
     if (!formData.budget) {
       setError("Please select a budget range");
-      return;
-    }
-
-    if (!user) {
-      toast.error("Please sign in to save your itinerary");
       return;
     }
 
@@ -572,38 +565,6 @@ export default function CreateTripPage() {
                   ))}
                 </div>
               </div>
-
-              <div className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all">
-                <div className="flex items-center gap-2 mb-6">
-                  <Globe className="w-5 h-5 text-primary-600" />
-                  <h2 className="text-xl font-semibold text-gray-900">
-                    Popular Destinations
-                  </h2>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  {popularDestinations.map((dest) => (
-                    <button
-                      key={dest.name}
-                      onClick={() => selectDestination(dest)}
-                      className="group relative h-32 sm:h-40 rounded-xl overflow-hidden focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
-                    >
-                      <img
-                        src={dest.image}
-                        alt={dest.name}
-                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                      />
-                      <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors" />
-                      <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-                        <p className="text-white font-medium text-sm">
-                          {dest.name}
-                        </p>
-                        <p className="text-white/80 text-xs">{dest.country}</p>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
               <button
                 type="submit"
                 disabled={isGenerating}
@@ -648,6 +609,38 @@ export default function CreateTripPage() {
                   </>
                 )}
               </button>
+
+              <div className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all">
+                <div className="flex items-center gap-2 mb-6">
+                  <Globe className="w-5 h-5 text-primary-600" />
+                  <h2 className="text-xl font-semibold text-gray-900">
+                    Popular Destinations
+                  </h2>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  {popularDestinations.map((dest) => (
+                    <button
+                      key={dest.name}
+                      onClick={() => selectDestination(dest)}
+                      className="group relative h-32 sm:h-40 rounded-xl overflow-hidden focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+                    >
+                      <img
+                        src={dest.image}
+                        alt={dest.name}
+                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors" />
+                      <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+                        <p className="text-white font-medium text-sm">
+                          {dest.name}
+                        </p>
+                        <p className="text-white/80 text-xs">{dest.country}</p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
             </form>
           </div>
         </div>

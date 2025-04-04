@@ -13,7 +13,7 @@ const profileService = {
 
   async updateProfile(userId, profile) {
     try {
-      const response = await axiosInstance.post(`/profiles/save/${userId}`, profile);
+      const response = await axiosInstance.post(`/createProfile/${userId}`, profile);
       return response.data;
     } catch (error) {
       console.error('Error fetching profile:', error);

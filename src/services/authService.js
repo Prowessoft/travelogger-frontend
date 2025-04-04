@@ -29,13 +29,13 @@ const authService = {
     } catch (error) {
       console.error('SignUp Error:', {
         message: error.message,
-        response: error.response?.data,
-        status: error.response?.status
+        response: error.data?.data,
+        status: error.data?.status
       });
 
-      if (error.response?.data?.message) {
-        throw new Error(error.response.data.message);
-      } else if (!error.response) {
+      if (error.data?.message) {
+        throw new Error(error.data.message);
+      } else if (!error.data) {
         throw new Error(error);
       } else {
         throw new Error('Failed to sign up. Please try again.');
@@ -69,21 +69,23 @@ const authService = {
     } catch (error) {
       console.error('SignIn Error:', {
         message: error.message,
-        response: error.response?.data,
-        status: error.response?.status
+        response: error.data?.data,
+        status: error.data?.status
       });
 
-      if (error.response?.data?.message) {
-        throw new Error(error.response.data.message);
-      } else if (error.response?.status === 401) {
-        throw new Error('Invalid email or password.');
-      } else if (!error.response) {
+      if (error.data?.data?.message) {
+        throw new Error(error.data.data.message);
+      } else if (error.data?.status === 401) {
+        throw new Error('Invalid email or password. Please try again.');
+      } else if (!error.data) {
         throw new Error('Network error. Please check your connection.');
       } else {
         throw new Error(error);
       }
     }
   },
+
+  
 
   async updatePassword(email, newPassword, confirmPassword) {
     try {
@@ -103,13 +105,13 @@ const authService = {
     } catch (error) {
       console.error('Update Password Error:', {
         message: error.message,
-        response: error.response?.data,
-        status: error.response?.status,
+        response: error.data?.data,
+        status: error.data?.status,
       });
 
-      if (error.response?.data?.message) {
-        throw new Error(error.response.data.message);
-      } else if (!error.response) {
+      if (error.data?.data?.message) {
+        throw new Error(error.data.data.message);
+      } else if (!error.data) {
         throw new Error('Network error. Please check your connection.');
       } else {
         throw new Error('Failed to update password. Please try again.');
@@ -129,13 +131,14 @@ const authService = {
     } catch (error) {
       console.error('otp Error:', {
         message: error.message,
-        response: error.response?.data,
-        status: error.response?.status,
+        response: error.data?.data,
+        status: error.data?.status,
       });
-
-      if (error.response?.data?.message) {
-        throw new Error(error.response.data.message);
-      } else if (!error.response) {
+      if(error.data.statusCode === 'EMAIL_NOT_EXIST') {
+        throw new Error('Email does not exist. Please signup with the email or enter a valid email address to send otp.');
+      } else if (error.data?.message) {
+        throw new Error(error.data?.message);
+      } else if (!error.data) {
         throw new Error('Network error. Please check your connection.');
       } else {
         throw new Error('Failed to update password. Please try again.');
@@ -155,13 +158,13 @@ const authService = {
     } catch (error) {
       console.error('otp Error:', {
         message: error.message,
-        response: error.response?.data,
-        status: error.response?.status,
+        response: error.data?.data,
+        status: error.data?.status,
       });
 
-      if (error.response?.data?.message) {
-        throw new Error(error.response.data.message);
-      } else if (!error.response) {
+      if (error.data?.message) {
+        throw new Error(error.data.message);
+      } else if (!error.data) {
         throw new Error('Network error. Please check your connection.');
       } else {
         throw new Error('Failed to update password. Please try again.');
@@ -179,9 +182,9 @@ const authService = {
     }
   },
 
-  deleteAccount(userId) {
+  async deleteAccount(userId) {
     try {
-      const response = axiosInstance.delete(`/user/hard/delete/${userId}`);
+      const response = await axiosInstance.delete(`/user/hard/delete/${userId}`);
       // if (!response.data) {
       //   throw new Error('No response data received');
       // }
@@ -191,12 +194,12 @@ const authService = {
     } catch (error) {
       console.error('Delete Account Error:', {
         message: error.message,
-        response: error.response?.data,
-        status: error.response?.status,
+        response: error.data?.data,
+        status: error.data?.status,
       });
 
-      if (error.response?.data?.message) {
-        throw new Error(error.response.data.message); // Throw error with message from server
+      if (error.data?.data?.message) {
+        throw new Error(error.data.data.message); // Throw error with message from server
       }
     }
   },

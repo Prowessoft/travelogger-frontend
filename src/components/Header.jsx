@@ -2,12 +2,16 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Compass, Camera, Menu, X, ChevronDown, ChevronUp } from "lucide-react";
 import { AuthModal } from "./auth/AuthModal";
+import DeleteConfirmationModal from "../modals/DeleteConfirmationModal";
 import { useAuthStore } from "../store/authStore";
+import { toast } from "sonner";
+
 
 export function Header() {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState("signin");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const { isAuthenticated, signOut, deleteAccount, user } = useAuthStore();
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
@@ -17,6 +21,21 @@ export function Header() {
     setAuthModalOpen(true);
     setMobileMenuOpen(false);
   };
+
+  const handleDeleteProfile = async () => {
+    try{
+      toast.loading("Deleting profile...");
+      await deleteAccount(user?.id);
+      toast.dismiss();
+      setIsDeleteModalOpen(false);
+      toast.success("Profile deleted successfully");
+      navigate("/");
+    }
+    catch (error) {
+      toast.error("Error deleting profile. please try again later")
+      console.log(error);
+    }
+  }
 
   return (
     <>
@@ -99,9 +118,9 @@ export function Header() {
                       <li>
                         <button
                           onClick={() => {
-                            deleteAccount(user.id);
                             navigate("/");
                             setIsOpen(false);
+                            setIsDeleteModalOpen(true)
                           }}
                           className="flex w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600"
                         >
@@ -178,9 +197,8 @@ export function Header() {
                   </button>
                   <button
                     onClick={() => {
-                      deleteAccount(user.id);
-                      navigate("/");
                       setIsOpen(false);
+                      setIsDeleteModalOpen(true)
                     }}
                     className="flex w-full text-left py-2 hover:bg-gray-100 text-red-600"
                   >
@@ -215,6 +233,11 @@ export function Header() {
           setAuthMode(null);
         }}
         initialMode={authMode}
+      />
+      <DeleteConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDeleteProfile}
       />
     </>
   );

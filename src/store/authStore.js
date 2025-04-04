@@ -28,6 +28,27 @@ const createAuthStore = (set) => ({
     }
   },
 
+  googleSignIn: async (user) => {
+    // set({ loading: true, error: null });
+    try {
+      // const { user } = await authService.googleSignIn();
+      set({
+        user,
+        isAuthenticated: true,
+        loading: false,
+        error: null
+      });
+    } catch (error) {
+      set({ 
+        error: error.message, 
+        loading: false,
+        user: null,
+        isAuthenticated: false
+      });
+      throw error;
+    }
+  },
+
   signUp: async (email, password, name, avatarUrl) => {
     set({ loading: true, error: null });
     try {
