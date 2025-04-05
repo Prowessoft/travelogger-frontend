@@ -13,7 +13,7 @@ const generatePayload = (days, trip, email) => {
           day.sections[type].map(res => ({
               name: res.location.name,
               address: res.location.address,
-              category: res.type
+              category: type
           }))
       ) 
       }))
