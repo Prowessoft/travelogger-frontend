@@ -65,7 +65,7 @@ const authService = {
       // Store user data
       localStorage.setItem('user', JSON.stringify(user));
 
-      return { user };
+      return user;
     } catch (error) {
       console.error('SignIn Error:', {
         message: error.message,
@@ -85,7 +85,7 @@ const authService = {
     }
   },
 
-  
+
 
   async updatePassword(email, newPassword, confirmPassword) {
     try {

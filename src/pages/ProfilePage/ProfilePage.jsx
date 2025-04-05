@@ -104,7 +104,7 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState("itineraries");
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState({});
-  const [userItineraryData, setUserItineraryData] = useState({});
+  const [userItineraryData, setUserItineraryData] = useState([]);
   const [userItineraries, setUserItineraries] = useState([]);
   const [loadingItineraries, setLoadingItineraries] = useState(false);
 
@@ -116,9 +116,9 @@ const abortController = new AbortController();
     }
 
 async function fetchData() {
-  if (user?.id) {
+  if (user?.id || user?.userId) {
     // You can await here
-    const profileData = await fetchProfile(user.id);
+    const profileData = await fetchProfile(user?.id || user?.userId);
     // const userItinerary = await itineraryService.getUserItineraries(user.id);
 
     // .catch((error) => {
@@ -133,7 +133,7 @@ async function fetchData() {
     //   // this will cancel the fetch request when the effect is unmounted
     //   abortController.abort();
     // };
-  }, [isAuthenticated, user?.id, fetchProfile, navigate]);
+  }, [isAuthenticated, user?.id, fetchProfile, navigate, user?.userId]);
 
   useEffect(() => {
     const fetchUserItineraries = async () => {
@@ -220,7 +220,7 @@ async function fetchData() {
     try {
       const removeRes = await itineraryService.deleteItinerary(itineraryId);
       if (removeRes) {
-        const updatedItineraries = userItineraryData.filter((itinerary) => itinerary.id !== itineraryId);
+        const updatedItineraries = userItineraryData?.filter((itinerary) => itinerary.id !== itineraryId);
         setUserItineraryData(updatedItineraries);
       } else {
         toast.error('Failed to remove itinerary');
@@ -233,9 +233,9 @@ async function fetchData() {
   const renderItineraryTabContent = (userItineraries) => {
     let filteredItinerary;
     if(activeTab === 'manual') {
-      filteredItinerary = userItineraryData.filter(iti => iti.generatedBy.toUpperCase() ==='MANUAL')
+      filteredItinerary = userItineraryData?.filter(iti => iti?.generatedBy?.toUpperCase() ==='MANUAL')
     } else if(activeTab === 'ai') {
-      filteredItinerary = userItineraryData.filter(iti => iti.generatedBy.toUpperCase() ==='AI');
+      filteredItinerary = userItineraryData?.filter(iti => iti?.generatedBy?.toUpperCase() ==='AI');
     } else {
       filteredItinerary = userItineraryData;
     }

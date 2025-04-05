@@ -25,7 +25,7 @@ export function Header() {
   const handleDeleteProfile = async () => {
     try{
       toast.loading("Deleting profile...");
-      await deleteAccount(user?.id);
+      await deleteAccount(user?.id || user?.userId);
       toast.dismiss();
       setIsDeleteModalOpen(false);
       toast.success("Profile deleted successfully");
@@ -40,9 +40,9 @@ export function Header() {
   const handleSignOut =  () => {
     const loadingToastId = toast.loading("Signing out...");
     try {
-      signOut();
       setTimeout(() => {
         toast.dismiss(loadingToastId);
+        signOut();
         toast.success("Signed out successfully!!");
         setIsOpen(false);
         navigate("/");

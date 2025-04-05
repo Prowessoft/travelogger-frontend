@@ -173,7 +173,7 @@ export default function ItineraryPage() {
     const dayCount = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
     const intialItinerary = {
         id: "",
-        userId: user?.id,
+        userId: user?.id || user?.userId,
         title: trip.destination?.name || trip.destination?.name,
         tripImg: "",
         status: "draft",
@@ -541,7 +541,7 @@ export default function ItineraryPage() {
         // return;
       } else {
         // const updatedItinerary = {...itineraryData, generatedBy: 'ai'}
-        await itineraryService.saveItinerary({...getItinerary(), userId:user.id});
+        await itineraryService.saveItinerary({...getItinerary(), userId:user.id || user.userId});
         // return;
       }
       toast.dismiss();

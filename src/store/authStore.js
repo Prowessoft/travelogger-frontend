@@ -10,7 +10,7 @@ const createAuthStore = (set) => ({
   signIn: async (email, password) => {
     set({ loading: true, error: null });
     try {
-      const { user } = await authService.signIn(email, password);
+      const user = await authService.signIn(email, password);
       set({
         user,
         isAuthenticated: true,
@@ -32,6 +32,7 @@ const createAuthStore = (set) => ({
     // set({ loading: true, error: null });
     try {
       // const { user } = await authService.googleSignIn();
+      localStorage.setItem('user', JSON.stringify(user));
       set({
         user,
         isAuthenticated: true,
